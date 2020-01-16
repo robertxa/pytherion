@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 # coding: utf8
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 	Script to build Therion files
 	By Xavier Robert
@@ -15,9 +19,6 @@
 		The inputs are in the script file, in the "# Define data to analysis" section. 
 		The different arguments are described.
 	
-	xavier.robert@univ-grenoble-alpes.fr
-	
-	(c) licence CCby-nc : http://creativecommons.org/licenses/by-nc/3.0/ 2016
 """
 
 ###### To DO :  #######
@@ -123,9 +124,6 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 		USAGE:
 			writethconfig(pdata, icomments, icoupe, thlang, dictcave, thcfile, [pdata2]):
 			
-		Author: Xavier Robert, Lima 2016/06/27
-		
-		Licence: CCby-nc
 	"""
 	
 	f2w = open(pdata, 'w')
@@ -134,7 +132,7 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	f2w.write(u'# File written by pytro2th (Xavier Robert)  \n')
 	#f2w.write(u'# Based on the work of Roman Muñoz <tatel@euskalnet.net> and Martin Gerbaux <martin.gerbaux@wanadoo.fr>  \n\n')
 	f2w.write(u'# Copyright (C) 2016 Xavier Robert <xavier.robert01@gmail.com> \n')
-	f2w.write(u'# This work is under the GPLv2 \n\n')
+	f2w.write(u'# This work is under the licence Creatice Commonc CC-by-nc-sa v.40 \n\n')
   
   
 	if icomments: 
@@ -239,7 +237,6 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 		
 		Author: Xavier Robert, Lima 2016/06/27
 		
-		Licence: CCby-nc
 	"""
 
 	if not icoupe:

@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 # coding: utf8
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 Script to build Therion files
 By Xavier Robert
@@ -14,10 +18,6 @@ USAGE :
 INPUTS:
 The inputs are in the script file, in the "# Define data to analysis" section. 
 The different arguments are described.
-
-xavier.robert@ujf-grenoble.fr
-
-(c) licence CCby-nc : http://creativecommons.org/licenses/by-nc/3.0/ 2015
 
 """
 
@@ -96,8 +96,6 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		writeheader_th(file, cavename, entrance)
 		
 	Author: Xavier Robert, Lima 2016/06/27
-	
-	Licence: CCby-nc
 	
 	"""
 	# First, define dictionaries to help the coding
@@ -251,8 +249,6 @@ def writedata(file, settings, data, dataold):
 		writeheader_th(file, cavename, entrance)
 		
 	Author: Xavier Robert, Lima 2016/06/27
-	
-	Licence: CCby-nc
 	
 	"""
 	

@@ -100,6 +100,5 @@ Depending of the input parameters, several files can be produced:
 Licence
 -------
 
-This package is licenced with `CCby-nc-sa`__
-
-__https://creativecommons.org/licenses/by-nc-sa/3.0/
+Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+SPDX-License-Identifier: GPL-3.0-or-later

@@ -1,6 +1,11 @@
 ######!/usr/bin/env python
 # -*- coding: utf8 -*-
 # coding: utf8
+
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 	!---------------------------------------------------------!
 	!                                                         !

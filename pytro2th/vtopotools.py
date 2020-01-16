@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 # coding: utf8
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 	Functions to work on vtopo data to be able to write them in the Therion format
 	By Xavier Robert
@@ -15,9 +19,6 @@
 		The inputs are in the script file, in the "# Define data to analysis" section. 
 		The different arguments are described.
 		
-	xavier.robert@univ-grenoble-alpes.fr
-	
-	(c) licence CCby-nc : http://creativecommons.org/licenses/by-nc/3.0/ 2016
 """
 
 ###### To DO :  #######

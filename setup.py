@@ -1,6 +1,10 @@
 ######!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 from setuptools import setup, find_packages
 
 # import the library
@@ -19,7 +23,7 @@ setup(name='pytherion',
 	#dowload_url='https://github.com/robertxa/pytro2th/archive/master.zip',
 	author='Xavier Robert',
 	author_email='xavier.Robert@univ-grenoble-alpes.fr',
-	license='CCby-nc',
+	license='GPL-V3.0',
 	packages=find_packages(),
 	#packages=['pytro2th'],
 	#scripts=['bin/tro2therion'],

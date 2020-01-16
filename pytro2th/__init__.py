@@ -1,6 +1,10 @@
 ######!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 from __future__ import  division
 # This to be sure that the result of the division of integers is a real, not an integer
 

@@ -1,6 +1,10 @@
 ######!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 Script to build Therion files
 By Xavier Robert
@@ -13,10 +17,6 @@ USAGE :
 INPUTS:
 The inputs are in the script file, in the "# Define data to analysis" section. 
 The different arguments are described.
-
-xavier.robert@ujf-grenoble.fr
-
-(c) licence CCby-nc : http://creativecommons.org/licenses/by-nc/3.0/ 2015
 
 """
 
