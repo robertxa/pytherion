@@ -270,7 +270,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	
 	if fle_th_fnme is None:
 		fle_th_fnme = cavename.replace(u' ', u'_') + u'.th'
-		print fle_th_fnme
+		print (fle_th_fnme)
 	if fle_th_fnme[-3:] != u'.th':
 		fle_th_fnme = fle_th_fnme + u'.th'	
 	

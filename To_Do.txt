@@ -1,0 +1,16 @@
+TO DO
+
+	- Revise the whole output structure --> do something similar to the Folly database (1 folder per cave, for each cave, 1 folder with data, 1 folder with coordinates, 1 folder with Outputs, 1 cave-maps.th file, 1 cave-tot.th file)
+	- Add better config.thc file
+	- Add better cave.thconfig file
+	- Test all the different possibilities
+	- Ameliorate the setup.py (https://twidi.github.io/python-packaging-talk/fr) ?
+	- requested by a user: conversion from Therion to Tro (but this is quite unproductive...); I will probably not do it
+	- 
+
+BUGS FOUNDS/TO BE CORRECTED
+	- Problem with text encoding when input with special caracters (normal in French...)
+	- 
+
+DONE
+	- 

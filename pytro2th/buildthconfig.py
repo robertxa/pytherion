@@ -1096,10 +1096,24 @@ def writethc(pdata):
 	return
 
 	
-def checkfiles(pdata, Errorfiles):
+def checkfiles(pdata, Errorfiles = True):
 	"""
-		Function to check if the file exists
-		Raise error if file exists
+	Function to check if the file exists
+	Raise error if file exists
+
+	INPUTS:
+		pdata         : variable that sets the file to check
+		Errorfiles    : boolean; if True (default), if pdata already exists, the program stops;
+		                         if False, the programme erase the old pdata
+	   
+	OUTPUTS:
+		None
+		
+	USAGE:
+		checkfiles(pdata, Errorfiles = False)
+		checkfiles(pdata)
+		
+	Author: Xavier Robert, Lima 2016/06/27
 	"""
 	# Check if file exists, if not, raise an error
 	if os.path.isfile(pdata) == True :
