@@ -22,7 +22,10 @@
 """
 
 ###### To DO :  #######
-#    - 
+#	- Add a maps.th file
+#	- Add a cave-tot.th file
+#	- Update cave output structure
+#	- 
 ###### End To DO #######
 
 from __future__ import  division
@@ -130,9 +133,8 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	
 	f2w.write(u'encoding utf-8 \n\n')
 	f2w.write(u'# File written by pytro2th (Xavier Robert)  \n')
-	#f2w.write(u'# Based on the work of Roman Muñoz <tatel@euskalnet.net> and Martin Gerbaux <martin.gerbaux@wanadoo.fr>  \n\n')
-	f2w.write(u'# Copyright (C) 2016 Xavier Robert <xavier.robert01@gmail.com> \n')
-	f2w.write(u'# This work is under the licence Creatice Commonc CC-by-nc-sa v.40 \n\n')
+	f2w.write(u'# Copyright (C) 2021 Xavier Robert <xavier.robert@ird.fr> \n')
+	f2w.write(u'# This work is under the licence Creatice Commonc CC-by-nc-sa v.4 \n\n')
   
   
 	if icomments: 
@@ -152,13 +154,18 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 			f2w.write(u'# will call mycave.th2") \n')
 	
 	# Do a loop on the input files
+	#	To move in the cave-tot.th and only call that last file?
 	for cfile in dictcave[0]:
 		f2w.write(u'source ' + cfile + u'\n')
 	f2w.write(u'\n')
 	
 	if icomments: 
-		if thlang == u'fr': f2w.write(u'# Ajoute un fichier de configuration\n')
-		elif thlang == u'en': f2w.write(u'# Add config file \n')
+		if thlang == u'fr':
+			f2w.write(u'# Ajoute un fichier de configuration\n')
+			f2w.write(u'# Voir https://github.com/robertxa/Th-Config-Xav pour un exemple\n')
+		elif thlang == u'en':
+			f2w.write(u'# Add config file \n')
+			f2w.write(u'# See https://github.com/robertxa/Th-Config-Xav for an example\n')
 	if thcfile: 
 		f2w.write(u'input ' + pdata2 + u'  \n\n\n')
 	else:

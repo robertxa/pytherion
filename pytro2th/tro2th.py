@@ -150,17 +150,12 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 	elif thlang in [u'en',u'EN', u'En', u'eN']: thlang = u'en'
 	else: raise NameError(u'ERROR: Language %s not implemented\n'
 	                      u'       Use "en" instead' % thlang )
-	
+	print(u'____________________________________________________________\n\n\t\tTRO 2 THERION\n____________________________________________________________\n')
 	if thlang == u'fr':
-		print(u'____________________________________________________________\n\n\t\tTRO 2 THERION\n____________________________________________________________\n')
 		print(u'\nEcrit par Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
-		print(u'____________________________________________________________')
-		print(u'')
 	elif thlang == u'en':
-		print(u'____________________________________________________________\n\n\t\tTRO 2 THERION\n____________________________________________________________\n')
 		print(u'\nWritten by Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
-		print(u'____________________________________________________________')
-		print(u'')
+	print(u'____________________________________________________________\n\n')
 	
 	coordsyst = None		
 	if fle_tro_fnme is not None:

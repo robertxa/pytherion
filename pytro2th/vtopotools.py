@@ -105,7 +105,7 @@ def read_settings(line):
 		
 		Licence: CCby-nc
 	"""
-	# Question : faut-il voir en fonction de la version du logiciel vtopo ??? A TESTER
+	# Question: Do we have to update the code in function of the vtopo version number?
 	param = line[6:].rstrip(u'\n\r').split(u' ')
 	k = 8
 	#k = 6
@@ -137,6 +137,9 @@ def read_data(lines, settings, j, iline):
 		
 		OUTPUTS:
 			data     : list of lists of data (string format)
+
+		USAGE:
+			data = read_data(lines, settings, j, iline)
 				
 		Author: Xavier Robert, Lima 2016/06/27
 		
