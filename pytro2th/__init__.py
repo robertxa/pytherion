@@ -14,7 +14,7 @@ import os
 #import copy
 import numpy as np
 
-__version__ = "0.1.0"
+__version__ = "1.1.0"
 
 # Import all the functions
 __all__ = ['vtopotools', 'datathwritetools', 'buildthconfig', 'buildthconfig', 'tro2th.tro2th']

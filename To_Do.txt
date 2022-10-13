@@ -1,16 +1,17 @@
 TO DO
 
 	- Revise the whole output structure --> do something similar to the Folly database (1 folder per cave, for each cave, 1 folder with data, 1 folder with coordinates, 1 folder with Outputs, 1 cave-maps.th file, 1 cave-tot.th file)
-	- Add better config.thc file
 	- Add better cave.thconfig file
 	- Test all the different possibilities
 	- Ameliorate the setup.py (https://twidi.github.io/python-packaging-talk/fr) ?
 	- requested by a user: conversion from Therion to Tro (but this is quite unproductive...); I will probably not do it
-	- 
+	- Revise the call to the write_thconfig function: for the moment, it does nto take in account the name of the cave defined by the .tro file or the user
 
 BUGS FOUNDS/TO BE CORRECTED
 	- Problem with text encoding when input with special caracters (normal in French...)
 	- 
 
 DONE
+	- 2020/02/03: module to download the config.thc file from my github repo.
+	- 2020/02/03: Add a function to build an whole folders structure
 	- 

@@ -30,8 +30,7 @@ from __future__ import  division
 #from __future__ import unicode_literals
 
 # Import modules
-import sys
-import os
+import sys, os
 import numpy as np
 
 def read_vtopo_header(lines):
@@ -69,7 +68,7 @@ def read_vtopo_header(lines):
 			versionfle = line[1].replace(u'\n', u'').rstrip(u'\n\r').split(' ')
 		if u'Trou' in line:
 			# read Trou
-	 		(cavename, xcoord, ycoord, alt, coordtro) = line[5:].replace(u'\n', u'').rstrip(u'\n\r').split(u',')
+			(cavename, xcoord, ycoord, alt, coordtro) = line[5:].replace(u'\n', u'').rstrip(u'\n\r').split(u',')
 			coordinates = [xcoord, ycoord, alt]
 		# read club
 		if u'Club' in line: club = line[5:].replace(u'\n', u'')
@@ -209,24 +208,26 @@ def convert_text(lines):
 			
 	return lines
 
-	
+
 if __name__ == u"__main__":
-	
+	"""
+	Function to test sub-functions
+	"""
 	from datathwritetools import writeheader_th, writecenterlineheader, writedata
 	
 	fle_tro_fnme = u'Test.tro'
 	fle_th_fnme = u'test.th'
 	icomments = True
 	thlang = u'fr'
+	cavename = u'cave'
 	
 	# open tro file
 	fle_tro = open(fle_tro_fnme, u'rU')
 	# open new th file
-	fle_th =  open(fle_th_fnme, u'w')
+	fle_th =  open(cavename.replace(u' ', u'_') + '/Data/' + fle_th_fnme, u'w')
 	
 	# read the tro file
 	lines = fle_tro.readlines()
-	
 	lines = convert_text(lines)
 	
 	# read the header

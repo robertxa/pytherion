@@ -30,7 +30,10 @@ setup(name='pytherion',
 	#install_requires=[
 	#      'os',
 	#      'numpy',
-	#      'sys'
+	#      'sys',
+	#      'wget',
+	#      'datetime',
+	#      'pyproj'
 	#],
 	#classifiers=[
 	#	"Programming language :: Python",
