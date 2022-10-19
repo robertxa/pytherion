@@ -1,0 +1,43 @@
+encoding utf-8 
+
+survey B3 -title "B3" -entrance "B3" 
+
+	centerline 
+		# Si le systeme de coordonnées n'est pas le système Lambert français, voir le Thbook et le fichier extern/proj4/nad/epsg dans le dossier source de Therion 
+		# Si les coordonnées de l'entrée sont connues, copier dans la centerline correspondante et décommenter les 2 lignes suivantes : 
+		cs EPSG:27572 
+		fix B3 0.000 0.000 0.000 
+
+		#date YYYY.MM.DD 
+		# Si date est utilisé, commenter la ligne "declination", la date sera utilisée pour la calculer
+		declination Inc degrees 
+			team "G.S. Vulcain" 
+			team "Club-Vulcain" 
+		#explo-date YYYY.MM.DD 
+			explo-team "G.S. Vulcain" 
+			explo-team "Club-Vulcain" 
+		# (peut être complété en ajoutant le nombre de lignes nécessaires) 
+
+		units length meters 
+		units compass degrees 
+		units clino degrees 
+
+		data topofil from to length compass clino left right up down
+			#;B3-Fred Delègue Cédric Chambe le 16-07-2010;
+			0	0d	0.00	0.00	0.00	0.50	0.50	0.30	0.50
+			0	B3	0.00	0.00	0.00	0.50	0.50	0.30	0.50
+			B3	1	1.80	385.00	-35.00	0.50	0.50	0.30	0.50
+			1	2	4.19	285.00	-50.00	2.50	0.30	2.00	1.00
+			2	3	4.60	200.00	-21.00	0.50	1.50	0.50	0.50
+			3	4	2.00	20.00	-82.00	0.20	0.20	0.00	0.50
+			4	5	2.43	240.00	-55.00	0.60	0.50	1.00	0.50
+			5	6	1.56	80.00	-30.00	0.50	0.50	1.00	0.50
+			6	7	3.78	180.00	-52.00	0.30	1.00	1.00	1.00
+			7	8	2.24	380.00	-85.00	0.20	1.50	3.00	0.50
+			8	9	3.32	155.00	-40.00	0.30	0.40	1.00	0.50
+			9	10	2.58	165.00	-50.00	0.30	0.40	1.00	1.00
+
+	endcenterline
+
+
+endsurvey

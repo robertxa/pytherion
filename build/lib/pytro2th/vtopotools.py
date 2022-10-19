@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 # coding: utf8
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 	Functions to work on vtopo data to be able to write them in the Therion format
 	By Xavier Robert
@@ -15,9 +19,6 @@
 		The inputs are in the script file, in the "# Define data to analysis" section. 
 		The different arguments are described.
 		
-	xavier.robert@univ-grenoble-alpes.fr
-	
-	(c) licence CCby-nc : http://creativecommons.org/licenses/by-nc/3.0/ 2016
 """
 
 ###### To DO :  #######
@@ -29,10 +30,10 @@ from __future__ import  division
 #from __future__ import unicode_literals
 
 # Import modules
-import sys
-import os
+import sys, os
 import numpy as np
 
+############################################################################
 def read_vtopo_header(lines):
 	"""
 		Function to read header from vtopofile
@@ -68,7 +69,7 @@ def read_vtopo_header(lines):
 			versionfle = line[1].replace(u'\n', u'').rstrip(u'\n\r').split(' ')
 		if u'Trou' in line:
 			# read Trou
-	 		(cavename, xcoord, ycoord, alt, coordtro) = line[5:].replace(u'\n', u'').rstrip(u'\n\r').split(u',')
+			(cavename, xcoord, ycoord, alt, coordtro) = line[5:].replace(u'\n', u'').rstrip(u'\n\r').split(u',')
 			coordinates = [xcoord, ycoord, alt]
 		# read club
 		if u'Club' in line: club = line[5:].replace(u'\n', u'')
@@ -84,7 +85,8 @@ def read_vtopo_header(lines):
 	
 	return cavename, coordinates, coordsyst, club, entrance, versionfle
 
-	
+
+############################################################################	
 def read_settings(line):
 	"""
 		Function to read the line that define the settings of the survey session : 
@@ -104,7 +106,7 @@ def read_settings(line):
 		
 		Licence: CCby-nc
 	"""
-	# Question : faut-il voir en fonction de la version du logiciel vtopo ??? A TESTER
+	# Question: Do we have to update the code in function of the vtopo version number?
 	param = line[6:].rstrip(u'\n\r').split(u' ')
 	k = 8
 	#k = 6
@@ -123,6 +125,7 @@ def read_settings(line):
 	return settings, comments#.encode('utf-8', errors = "replace")
 
 
+############################################################################
 def read_data(lines, settings, j, iline):
 	"""
 		Function to read the data from the line
@@ -136,6 +139,9 @@ def read_data(lines, settings, j, iline):
 		
 		OUTPUTS:
 			data     : list of lists of data (string format)
+
+		USAGE:
+			data = read_data(lines, settings, j, iline)
 				
 		Author: Xavier Robert, Lima 2016/06/27
 		
@@ -163,6 +169,7 @@ def read_data(lines, settings, j, iline):
 	return data
 
 
+############################################################################
 def convert_text(lines):
 	"""
 		Fonction to convert characters encoding...
@@ -196,32 +203,37 @@ def convert_text(lines):
 	             '\xef' : u'ï'}
 	
 	for line in lines:
-		# windows = latin-1 ? cp1252 ?
+	#for line in lines.decode('cp1252'):
+		#line = line.decode('cp1252')
+		# windows = latin-1 ? cp-1252 ? cp1252 ? mbcs ?
 		for elem in dictcaract:
-			print line
+			#print line
 			if elem in line:
 				line = line.replace(elem, dictcaract[elem])
 			
 	return lines
 
-	
+
+############################################################################
 if __name__ == u"__main__":
-	
+	"""
+	Function to test sub-functions
+	"""
 	from datathwritetools import writeheader_th, writecenterlineheader, writedata
 	
 	fle_tro_fnme = u'Test.tro'
 	fle_th_fnme = u'test.th'
 	icomments = True
 	thlang = u'fr'
+	cavename = u'cave'
 	
 	# open tro file
 	fle_tro = open(fle_tro_fnme, u'rU')
 	# open new th file
-	fle_th =  open(fle_th_fnme, u'w')
+	fle_th =  open(cavename.replace(u' ', u'_') + '/Data/' + fle_th_fnme, u'w')
 	
 	# read the tro file
 	lines = fle_tro.readlines()
-	
 	lines = convert_text(lines)
 	
 	# read the header

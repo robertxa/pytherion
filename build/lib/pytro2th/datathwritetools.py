@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 # coding: utf8
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 Script to build Therion files
 By Xavier Robert
@@ -14,10 +18,6 @@ USAGE :
 INPUTS:
 The inputs are in the script file, in the "# Define data to analysis" section. 
 The different arguments are described.
-
-xavier.robert@ujf-grenoble.fr
-
-(c) licence CCby-nc : http://creativecommons.org/licenses/by-nc/3.0/ 2015
 
 """
 
@@ -34,10 +34,9 @@ from __future__ import  division
 #from __future__ import unicode_literals
 
 # Import modules
-import sys
-import os
-import copy
+import sys, os, copy, datetime
 import numpy as np
+from pyproj import Proj, transform
 
 
 def writeheader_th(file, cavename, entrance):
@@ -56,8 +55,6 @@ def writeheader_th(file, cavename, entrance):
 		writeheader_th(file, cavename, entrance)
 		
 	Author: Xavier Robert, Lima 2016/06/27
-	
-	Licence: CCby-nc
 	
 	"""
 	
@@ -97,8 +94,6 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		
 	Author: Xavier Robert, Lima 2016/06/27
 	
-	Licence: CCby-nc
-	
 	"""
 	# First, define dictionaries to help the coding
 	# angleU: define the angle unit
@@ -121,11 +116,11 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	             u'Degd' : u'90',
 	             u'Gra'  : u'100'}
 	# typelen: type of length measures
-	typelem = {u'Deca' : u'normal',
-	          u'Topof' : u'topofil',
-	          u'Vulc' : u'topofil',
-	          u'Prof' : u'diving',
-	          u'Deniv' : u'deniv'}
+	#typelem = {u'Deca' : u'normal',
+	#          u'Topof' : u'topofil',
+	#          u'Vulc' : u'topofil',
+	#          u'Prof' : u'diving',
+	#          u'Deniv' : u'deniv'}
 	# style: data style
 	style = {u'Deca'   : u'normal',
 	         u'Topof'  : u'topofil',
@@ -252,8 +247,6 @@ def writedata(file, settings, data, dataold):
 		
 	Author: Xavier Robert, Lima 2016/06/27
 	
-	Licence: CCby-nc
-	
 	"""
 	
 	# dictl = length of the data line
@@ -294,4 +287,271 @@ def writedata(file, settings, data, dataold):
 			file.write(u'\t\t\tflags not duplicate \n')	
 		i+=1
 				
+	return
+
+def write_thtot(file, cavename = u'cave', icomments = True, thlang = 'en'):
+	"""
+	Function to write the file cavename-tot.th
+	
+	INPUTS:
+	   file         : variable that sets the file.th
+	   cavename     : name of the cave
+	   icomments    : True if comments in the file
+		              False if not
+		thlang      : 'fr' for french
+		              'en' for english
+		              ... other languages not implemented
+	   
+	OUTPUTS:
+		None
+		
+	USAGE:
+		write_thtot(file, cavename,  icomments, thlang)
+		
+	Author: Xavier Robert, Grenoble 2021/01/03
+	
+	"""
+	
+	file.write(u'encoding utf-8 \n\n')
+
+	#file.write(u'encoding utf-8' \n\nsurvey %s -title "%s" -entrance "%s" \n'
+	#           %(cavename.replace(u' ', u'_'), cavename, entrance))
+
+	if icomments:
+		if thlang == u'fr':
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Ce travaille est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :\n')
+			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
+	elif thlang == u'en':
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# This work is under the Creative Commons Attribution-ShareAlike-NonCommecial License:\n')
+			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
+ 
+	file.write(u'survey %s -title "%s"\n\n' %(cavename.replace(u' ', u'_'), cavename.replace(u' ', u'_')))
+
+	if icomments:
+		if thlang == u'fr':
+			file.write(u'\t# Pour importer les différentes données de différents fichiers topos :\n') 
+		if thlang == u'en':
+			file.write(u'\t# To import data from different data files:\n')
+	file.write(u'\tinput Data/%s.th\n\n' %(cavename.replace(u' ', u'_')))
+	
+	file.write(u'#\tcenterline\n')
+	if icomments:
+		if thlang == u'fr': file.write(u'\t\t##Rajout des longueurs explorées, non topo, ou topos perdues\n')
+		elif thlang == u'en': file.write(u'\t\t##Add length explored, but not surveyed, or with lost surveys\n')
+
+		file.write(u'#\t\tstation Ca.31@%s "+78 m explorés " continuation explored 78m\n' %(cavename.replace(u' ', u'_')))
+	if icomments:
+		if thlang == u'fr': file.write(u'\t\t## Pour assembler plusieurs fichiers topos\n')
+		elif thlang == u'en': file.write(u'\t\t## To join different surveys\n')
+
+	file.write(u'#\t\tequate  6@%s  0@%s\n\n'%(cavename.replace(u' ', u'_'), cavename.replace(u' ', u'_') + u'2'))
+		
+	file.write(u'#\tendcenterline)\n\n')
+ 
+	if icomments:
+		file.write(u'#\t##########################################################################################\n')
+		if thlang == u'fr': 
+			file.write(u'#\t## Pour importer les différents fichiers de dessins en plan\n')
+			file.write(u'#\t## Et Pour assembler plusieurs scraps entre eux, il faut utiliser la commande\n')
+			file.write(u"#\t## join scrap1 scrap2 -count n (où n = nombre de galerie à connecter, par défaut n = 1). C'est tout simple !\n")
+		elif thlang == u'en':
+			file.write(u'#\t## To import different th2 files\n')
+			file.write(u'#\t## And to join different scraps together, you need to use the command\n')
+			file.write(u"#\t## join scrap1 scrap2 -count n (wher n = number of connections, by default n = 1). This is simple!\n")
+
+	file.write(u'#\tjoin scrap1 scrap2 #-count n\n\n')
+
+	if icomments:
+		if thlang == u'fr': file.write(u'## Pour le plan\n')
+		elif thlang == u'en': file.write(u'## For plan view\n')
+	
+	file.write(u'input Data/%s.th2\n\n' %(cavename.replace(u' ', u'_')))
+
+	if icomments:
+		if thlang == u'fr': file.write(u'## Pour la coupe développée\n')
+		elif thlang == u'en': file.write(u'## For extended elevation\n')
+
+	file.write(u'input Data/%s-coupe.th2\n\n' %(cavename.replace(u' ', u'_')))
+
+	if icomments:
+		if thlang == u'fr': file.write(u'## Appel des maps\n')
+		elif thlang == u'en': file.write(u'## Call the maps file\n')
+
+	file.write(u'input %s-maps.th\n\n' %(cavename.replace(u' ', u'_')))
+	file.write(u'endsurvey\n')
+
+	return
+
+
+
+
+def write_thmaps(file, cavename = u'cave', icomments = True, thlang = 'en'):
+	"""
+	Function to write the file cavename-maps.th
+	
+	INPUTS:
+	   file         : variable that sets the file.th
+	   cavename     : name of the cave
+	   icomments    : True if comments in the file
+		              False if not
+		thlang      : 'fr' for french
+		              'en' for english
+		              ... other languages not implemented
+	   
+	OUTPUTS:
+		None
+		
+	USAGE:
+		write_thmaps(file, cavename, icomments, thlang)
+		
+	Author: Xavier Robert, Grenoble 2021/01/03
+	
+	"""
+	
+	file.write(u'encoding utf-8 \n\n')
+
+	#file.write(u'encoding utf-8' \n\nsurvey %s -title "%s" -entrance "%s" \n'
+	#           %(cavename.replace(u' ', u'_'), cavename, entrance))
+
+	if icomments:
+		if thlang == u'fr':
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Ce travail est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :\n')
+			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
+	elif thlang == u'en':
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# This work is under the Creative Commons Attribution-ShareAlike-NonCommecial License:\n')
+			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
+
+	file.write(u'map MP-%s-plan-tot -title "%s"\n' %(cavename.replace(u' ', u'_'), cavename.replace(u' ', u'_')))
+	file.write(u'\tSP-%s-1\n' %(cavename.replace(u' ', u'_')))
+	file.write(u'\t#break\n')
+	file.write(u'\t#SP-%s-2\n' %(cavename.replace(u' ', u'_')))
+	file.write(u'endmap\n')
+
+	file.write(u'map MC-%s-coupe-tot -title "%s"\n' %(cavename.replace(u' ', u'_'), cavename.replace(u' ', u'_')))
+	file.write(u'\tSC-%s-1\n' %(cavename.replace(u' ', u'_')))
+	file.write(u'\t#break\n')
+	file.write(u'\t#SC-%s-2\n' %(cavename.replace(u' ', u'_')))
+	file.write(u'endmap\n')
+
+	return
+
+
+def write_thcoords(file, cavename = u'cave', coordinates = None, coordsyst = None, icomments = True, thlang = u'en'):
+	"""
+	Function to write the file Legends/entrances_coordinates.th
+	
+	INPUTS:
+		file         : variable that sets the file.th
+		cavename     : name of the cave
+		cordinates   : Coordinates of the Cave
+		coordsyst    : Coordinates system and projection
+		icomments    : True if comments in the file
+		              False if not
+		thlang      : 'fr' for french
+		              'en' for english
+		              ... other languages not implemented
+	   
+	OUTPUTS:
+		None
+		
+	USAGE:
+		write_thcoords(file, cavename, coordinates, coordsyst, icomments, thlang)
+		
+	Author: Xavier Robert, Grenoble 2021/01/03
+	
+	"""
+	
+	# Coordinates definition
+	if coordinates: 
+		if coordsyst:
+			# Transform Lambert coordinates into Lat Long coordinates
+			inProj = Proj(coordsyst)
+			outProj = Proj('epsg:4326')
+			latc, longc = transform(inProj, outProj, float(coordinates[0]), float(coordinates[1]))
+		else:
+			latc = coordinates[1] + u'(Check coord. syst.)'
+			longc = coordinates[0] + u'(Check coord. syst.)'
+		altc = coordinates[2]
+	else:
+		latc = u'None'
+		longc = u'None'
+		altc = u'None'
+		
+	file.write(u'encoding utf-8 \n\n')
+
+	if icomments:
+		if thlang == u'fr':
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Ce travail est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :\n')
+			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
+	elif thlang == u'en':
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# This work is under the Creative Commons Attribution-ShareAlike-NonCommecial License:\n')
+			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
+
+	file.write(u'layout Entrances_coords_%s\n\n' %(cavename.replace(u' ', u'_')))
+	
+	if icomments:
+		if thlang == u'fr':
+			file.write(u'\t# Layout qui définit les différentes variables contenant du texte avec \n')
+			file.write(u"\t# les coordonnées de l'entrée que nous voulons ajouter au header.\n")
+			file.write(u"\t# Nous avons besoin d'une variable par entrée.\n")
+			file.write(u'\t# Ce layout est appelé par le layout Coords_Header ci-dessous\n\n')
+		elif thlang == u'en':
+			file.write(u'\t# Layout where we define the different variables that contain the text with \n')
+			file.write(u'\t# the entrance coordinates we want to print in the header.\n')
+			file.write(u'\t# We need one variable per entrance.\n')
+			file.write(u'\t# This layout is called by the layout Coords_Header below\n\n')
+
+	file.write(u'\tcode tex-map\n')
+	file.write(u'\t\t\\def\\thjunk{ }\n')
+	file.write(u'\t\t\\def\\thlocation%s{%s    --  Lat. : %s N ; Long. : %s E ; Alt. : %s m}\n' %(cavename.replace(u' ', u'_'), cavename.replace(u' ', u'_'), str(latc), str(longc), str(altc)))
+	# We probably need in the future to iterate on the number of entrances... 
+	# I do not knwo for the moment if Visual Top take in account different entrences coordinates
+	file.write(u'\tendcode\n\n') 
+	
+	file.write(u'\tendlayout\n\n')
+
+
+	file.write(u'layout Coords_Header_%s\n\n' %(cavename.replace(u' ', u'_')))
+	if icomments:
+		if thlang == u'fr': file.write(u'\t# Layout that set the presentation for the entrance coordinates.\n\n')
+	
+	file.write(u'\tcopy Entrances_coords_%s\n\n' %(cavename.replace(u' ', u'_')))
+	if icomments:
+		if thlang == u'fr':
+			file.write(u'\t# Appelle le layout ci-dessus Entrances_coords où nous avons défini les différentes \n')
+			file.write(u'\t# variables qui contiennent le texte avec \n')
+			file.write(u'\t# les coordonnées des entrées à écrire dans le header.\n\n')
+		elif thlang == u'en':
+			file.write(u'\t# it calls the layout above Entrances_coords where we defined the different \n')
+			file.write(u'\t# variables that contain the text with \n')
+			file.write(u'\t# the entrance coordinates we want to print in the header.\n\n')
+	
+	file.write(u'\tcode tex-map\n')
+	file.write(u'\t\t\\def\\nostring{}\n')
+	file.write(u'\t\t\\def\\thsizexl{}\n')
+	file.write(u'\t\t\\def\\thsizel{}\n')
+	file.write(u'\t\t\\def\\thsizem{}\n')
+	file.write(u'\t\t\\ifx\\thsizexl\\nostring\\def\\thsizexl{30}\\else\\fi\n')
+	file.write(u'\t\t\\ifx\\thsizel\\nostring\\def\\thsizel{24}\\else\\fi\n')
+	file.write(u'\t\t\\ifx\\thsizem\\nostring\\def\\thsizem{12}\\else\\fi\n\n')
+		
+	file.write(u'\t\t\\ECoordinates={\n')
+	file.write(u'\t\t\t\\edef\\tmp{\\thjunk} \\ifx\\tmp\\empty \\else\n')
+	file.write(u'\t\t\t\t{\\size[\\thsizem] \\ss\\thjunk\\vss}\n')
+	file.write(u'\t\t\t\\fi\n')
+	file.write(u'\t\t\t\\edef\\tmp{\\thlocation%s} \\ifx\\tmp\\empty \\else\n' %(cavename.replace(u' ', u'_')))
+	file.write(u'\t\t\t\t# The first one should be without hskip\n')
+	file.write(u'\t\t\t\t{\\size[\\thsizem]\\hskip2cm \\ss\\thlocation%s\\vss}\n' %(cavename.replace(u' ', u'_')))
+	file.write(u'\t\t\t\\fi\n')
+	file.write(u'\t\t\t}\n')
+	file.write(u'\tendcode\n\n')
+
+	file.write(u'\tendlayout\n\n')
+
 	return

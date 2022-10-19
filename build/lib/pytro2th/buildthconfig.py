@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 # coding: utf8
 
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 	Script to build Therion files
 	By Xavier Robert
@@ -15,13 +19,13 @@
 		The inputs are in the script file, in the "# Define data to analysis" section. 
 		The different arguments are described.
 	
-	xavier.robert@univ-grenoble-alpes.fr
-	
-	(c) licence CCby-nc : http://creativecommons.org/licenses/by-nc/3.0/ 2016
 """
 
 ###### To DO :  #######
-#    - 
+#	- Add a maps.th file
+#	- Add a cave-tot.th file
+#	- Update cave output structure
+#	- 
 ###### End To DO #######
 
 from __future__ import  division
@@ -29,14 +33,12 @@ from __future__ import  division
 #from __future__ import unicode_literals
 
 # Import modules
-import sys
-import os
+import sys, os, datetime
 import numpy as np
 
 ########################
 
-def builddictcave(
-                  thlang = u'en', icomments = True, icoupe = True, Errfiles = True,
+def builddictcave(thlang = u'en', icomments = True, icoupe = True, Errfiles = True,
                   thcfile = True, thcfnme = u'config.thc', thcpath = None, 
                   thconfigfile = True, thconfigpath = None, thconfigfnme= u'Test.thconfig'):
 	"""
@@ -74,14 +76,14 @@ def builddictcave(
 
 
 	# sourcefiles: source files
-	sourcefile = [u'example.th', u'example.th2', u'example-coupe.th2']
+	sourcefile = [u'cave.th', u'cave.th2', u'cave-coupe.th2']
 	# xviscale: scale of the xvi file
 	#           1000 corresponds to 1/1000
 	xviscale = 1000
 	# xvigrid: spacing of the grid for the xvi, in meters
 	xvigrid = 10
 	# cavefnme: cave fnme
-	cavefnme = u'Example'
+	cavefnme = u'cave'
 	# coord: coordinate system
 	#        Can be set to None
 	coord = None
@@ -95,7 +97,7 @@ def builddictcave(
 	        icomments, icoupe, Errfiles]
 	dictcave = [sourcefile, xviscale, xvigrid, cavefnme, coord, scale]
 	
-	return dictcave, data
+	return dictcave, datac
 
 
 def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
@@ -123,18 +125,14 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 		USAGE:
 			writethconfig(pdata, icomments, icoupe, thlang, dictcave, thcfile, [pdata2]):
 			
-		Author: Xavier Robert, Lima 2016/06/27
-		
-		Licence: CCby-nc
 	"""
 	
 	f2w = open(pdata, 'w')
 	
 	f2w.write(u'encoding utf-8 \n\n')
 	f2w.write(u'# File written by pytro2th (Xavier Robert)  \n')
-	#f2w.write(u'# Based on the work of Roman Muñoz <tatel@euskalnet.net> and Martin Gerbaux <martin.gerbaux@wanadoo.fr>  \n\n')
-	f2w.write(u'# Copyright (C) 2016 Xavier Robert <xavier.robert01@gmail.com> \n')
-	f2w.write(u'# This work is under the GPLv2 \n\n')
+	f2w.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr> \n' %(str(datetime.datetime.now().year)))
+	f2w.write(u'# This work is under the licence Creatice Commonc CC-by-nc-sa v.4 \n\n')
   
   
 	if icomments: 
@@ -154,13 +152,32 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 			f2w.write(u'# will call mycave.th2") \n')
 	
 	# Do a loop on the input files
-	for cfile in dictcave[0]:
-		f2w.write(u'source ' + cfile + u'\n')
+	#	To move in the cave-tot.th and only call that last file?
+	#for cfile in dictcave[0]:
+	#	f2w.write(u'source ' + cfile + u'\n')
+	#file.write(u'input Data/%s.th\n\n' %(cavename.replace(u' ', u'_')))
+	f2w.write(u'input %s-tot.th\n\n' %(dictcave[0][0][-3:]))	# Maybe to change for cavename
 	f2w.write(u'\n')
 	
 	if icomments: 
-		if thlang == u'fr': f2w.write(u'# Ajoute un fichier de configuration\n')
-		elif thlang == u'en': f2w.write(u'# Add config file \n')
+		if thlang == u'fr': f2w.write(u'# Appeller le fichier de définition des maps\n')
+		elif thlang == u'en': f2w.write(u'# Call maps definition file\n')
+	f2w.write(u'input %s-maps.th\n\n' %(dictcave[0][0][-3:]))	# Maybe to change for cavename
+	f2w.write(u'\n')
+
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Appeller le fichier de coordonnées de la cavité\n')
+		elif thlang == u'en': f2w.write(u'# Call Coordinates definition file\n')
+	f2w.write(u'#input legends/entrances_coordinates.th\n\n')
+
+
+	if icomments: 
+		if thlang == u'fr':
+			f2w.write(u'# Ajoute un fichier de configuration\n')
+			f2w.write(u'# Voir https://github.com/robertxa/Th-Config-Xav pour un exemple\n')
+		elif thlang == u'en':
+			f2w.write(u'# Add config file \n')
+			f2w.write(u'# See https://github.com/robertxa/Th-Config-Xav for an example\n')
 	if thcfile: 
 		f2w.write(u'input ' + pdata2 + u'  \n\n\n')
 	else:
@@ -174,7 +191,7 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	f2w.write(u'layout xviexport \n')
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'\t# Echelle a laquelle on veut dessiner la topo \n')
-		if thlang == u'en': f2w.write(u'\t# Scale to draw the survey \n')
+		elif thlang == u'en': f2w.write(u'\t# Scale to draw the survey \n')
 	f2w.write(u'\tscale 1 ' + str(dictcave[1]) + u' \n')
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'\t# Taille de la grille \n')
@@ -187,7 +204,7 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	f2w.write(u'endlayout \n')
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Fin de la définition du layout "xviexport"  \n')
-		if thlang == u'en': f2w.write(u'# End of the definition of the layout "xviexport"  \n')
+		elif thlang == u'en': f2w.write(u'# End of the definition of the layout "xviexport"  \n')
 	f2w.write(u'\n\n')
 	
 	writelayout(f2w, dictcave, icomments, thlang)
@@ -197,18 +214,47 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	
 	f2w.write(u'\n\n')
 	f2w.write(u'# 3-EXPORTS   \n')
+
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Export des xvi pour le dessin \n')
+		elif thlang == u'en': f2w.write(u'# xvi exports for drawing purpose \n')
 	f2w.write(u'export map -fmt xvi -layout xviexport -o '+ dictcave[3] + u'-map.xvi\n')
 	if icoupe: f2w.write(u'export map -projection extended -fmt xvi -layout xviexport -o '+ dictcave[3] + u'-coupe.xvi\n\n')
- 
-	f2w.write(u'export map -o '+ dictcave[3] + u'-plan.pdf -layout my_layout\n')
+
+	# select maps
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Séléction des maps à exporter  \n')
+		elif thlang == u'en': f2w.write(u'# Select maps to export  \n')
+	f2w.write(u'select MP-'+ dictcave[3] + u'#@' + dictcave[3] +' \n')
+	if icoupe: f2w.write(u'select MC-'+ dictcave[3] + u'#@' + dictcave[3] +' \n')
+
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Export des pdfs  \n')
+		elif thlang == u'en': f2w.write(u'# Pdfs export  \n')
 	if icoupe: f2w.write(u'export map -projection extended -layout my_layout-coupe -o '+ dictcave[3] + u'-coupe.pdf\n')
-	f2w.write(u'export model -o '+ dictcave[3] + u'.lox\n\n')
+	f2w.write(u'export map -o Outputs/' + dictcave[3] + u'-plan.pdf -layout my_layout\n')
+	
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Export du modèle 3D  \n')
+		elif thlang == u'en': f2w.write(u'# 3D export  \n')
+	f2w.write(u'export model -o Outputs/' + dictcave[3] + u'.lox\n\n')
  
-	f2w.write(u'# Export des fichiers ESRI\n')
-	f2w.write(u'export map -proj plan -fmt esri -o '+ dictcave[3] + u' -layout my_layout\n')
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Export des fichier ESRI  \n')
+		elif thlang == u'en': f2w.write(u"# ESRI's files export  \n")
+	f2w.write(u'export map -proj plan -fmt esri -o Outputs/' + dictcave[3] + u' -layout my_layout\n')
  
-	f2w.write(u'# Export des fichiers kml\n')
-	f2w.write(u'export map -proj plan -fmt kml -o '+ dictcave[3] + u'.kml -layout my_layout\n\n')
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Export du fichier kml  \n')
+		elif thlang == u'en': f2w.write(u'# kml export  \n')
+	f2w.write(u'export map -proj plan -fmt kml -o Outputs/' + dictcave[3] + u'.kml -layout my_layout\n\n')
+
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Export des listes  \n')
+		elif thlang == u'en': f2w.write(u'# Lists export  \n')
+	f2w.write(u'export continuation-list -o Outputs/Continuations' + dictcave[3] + '.html \n')
+	f2w.write(u'export survey-list -location on -o Outputs/Surveys' + dictcave[3] + '.html \n')
+	f2w.write(u'export cave-list -location on -o Outputs/Caves2020' + dictcave[3] + '.html \n')
 
 	
 	f2w.closed
@@ -239,7 +285,6 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 		
 		Author: Xavier Robert, Lima 2016/06/27
 		
-		Licence: CCby-nc
 	"""
 
 	if not icoupe:
@@ -247,20 +292,26 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 	else:
 		fw.write(u'layout my_layout-coupe\n\n')
 
-	fw.write(u'\t#copy northarrowMG \n')
 	if icomments:
 		if thlang == u'fr':
-			fw.write(u'\n\t# Appelle le fichier de configuration (Layout config dans le fichier config.thc file)\n')
+			fw.write(u'\n\t# Appelle le(s) fichier(s) de configuration (Layout config dans le fichier config.thc file)\n')
 		elif thlang == u'en':
 			fw.write(u'\n\t# Call the config settings (Layout config inside the config.thc file)\n')
 	fw.write(u'\tcopy drawingconfig \n')
+	fw.write(u'\t#copy Coords_Header_%s\n' %(dictcave[3]))
+	fw.write(u'\tcopy drawingconfig\n')
+	if not icoupe: fw.write(u'\tcopy headerl\n')
+	else: fw.write(u'\tcopy header_coupe \n')
+	fw.write(u'\tcopy langue-fr\n\n')
 
 	if icomments:
-		if thlang == u'fr':
-			fw.write(u'\n\t# Titre  \n')
-		elif thlang == u'en':
-			fw.write(u'\n\t# Title  \n')
+		if thlang == u'fr': fw.write(u'\n\t# Titre du pdf \n')
+		elif thlang == u'en': fw.write(u'\n\t# pdf Title \n')
 	fw.write(u'\tdoc-title "' + str(dictcave[3]) + '"\n')
+	if icomments:
+		if thlang == u'fr': fw.write(u'\n\t# Auteur du pdf \n')
+		elif thlang == u'en': fw.write(u'\n\t# pdf Author \n')
+	fw.write(u'\tdoc-author "Xavier Robert"\n\n')
   
 	if not icoupe:	
 		# print this lines for cs systems only for the plan view, not for the extended elevation view
@@ -272,9 +323,10 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 				fw.write(u'\n\t# To draw the map survey in the UTM system  \n')
 				fw.write(u'\t# Uncomment the line, and remplace xx by the UTM zone used\n')
 		if dictcave[4] == None:
-			fw.write(u'\t#cs UTMxx\n')
+			fw.write(u'\t#cs UTMxx\n\n')
 		else:
-			fw.write(u'\tcs ' + dictcave[4] + ' \n')
+			fw.write(u'\tcs ' + dictcave[4] + ' \n\n')
+	
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# "base-scale" specifie l\'échelle à laquelle nous avons\n')
@@ -289,7 +341,7 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 			fw.write(u'\t#  (see xviexport layout). Defaut is 1/200.\n')
 			fw.write(u'\t# If we use an other scale,, we have to uncomment this \n')
 			fw.write(u'\t# line and specify the drwing scale\n') 
-	fw.write(u'\tbase-scale 1 ' + str(dictcave[1]) + '\n')
+	fw.write(u'\tbase-scale 1 ' + str(dictcave[1]) + '\n\n')
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# "scale" : specification de l\'échelle,\n')
@@ -308,37 +360,33 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 			fw.write(u'\t# The option "Fit in page" or similar\n')
 			fw.write(u'\t# will change the scale of the printed topography\n')
 	fw.write(u'\t#scale 1 1000\n')
-	fw.write(u'\tscale 1 ' + str(dictcave[5]) + u'\n')
+	fw.write(u'\tscale 1 ' + str(dictcave[5]) + u'\n\n')
 	if icomments:
 		if thlang == u'fr':
-			fw.write(u'\n\t# Echelle graphique de 100 m d\'ampleur\n')
+			fw.write(u'\n\t# Echelle graphique de %s m d\'ampleur\n' %(str(dictcave[5]/10)))
 		elif thlang == u'en':
-			fw.write(u'\n\t# Length of the scale bar (Here, 100 m)\n')
-	fw.write(u'\t#scale-bar 100 m\n')
-	fw.write(u'\tscale-bar ' + str(dictcave[5]/10) + u' m\n')
+			fw.write(u'\n\t# Length of the scale bar (Here, %s m)\n' %(str(dictcave[5]/10)))
+	fw.write(u'\tscale-bar %s m\n\n' %(str(dictcave[5]/10)))
   
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# Pour faire une rotation\n')
 		elif thlang == u'en':
 			fw.write(u'\n\t# To rotate the map\n')
-	fw.write(u'\t#rotate 2.25\n')
-  
-	fw.write(u'\t#origin 12 22 0 m\n')
-	fw.write(u'\t#origin-label 100 K\n')
+	fw.write(u'\t#rotate 2.25\n\n')
   
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# Une couleur de fond, 85% blanc = 15% noir\n')
 		elif thlang == u'en':
 			fw.write(u'\n\t# Background color, 85% white = 15% black\n')
-	fw.write(u'\t#color map-bg 85\n')
+	fw.write(u'\t#color map-bg 85\n\n')
 	if icomments:
 		if thlang == u'fr':
-			fw.write(u'\n\t# Une couleur de topo (RVB)\n')
+			fw.write(u'\n\t# Une couleur de topo (RVB entre 0 et 100)\n')
 		elif thlang == u'en':
-			fw.write(u'\n\t# Map color (RVB)\n')
-	fw.write(u'\tcolor map-fg [100 100 80]\n')
+			fw.write(u'\n\t# Map color (RVB between 0-100)\n')
+	fw.write(u'\tcolor map-fg [100 100 80]\n\n')
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# la topo est transparente (on peut voir les galeries sousjacentes)\n')
@@ -347,29 +395,24 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 			fw.write(u'\n\t# To impose transparency for the topography\n' )
 			fw.write(u'\t(# We can thus see the lower tunnels)\n')
 			fw.write(u'\t# Option on by default, so not necessary\n')
-	fw.write(u'\ttransparency on\n')
+	fw.write(u'\ttransparency on\n\n')
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# Pourcentage de transparence, marche seulement si transparency est "on"\n')
 		elif thlang == u'en':
 			fw.write(u'\n\t# Pourcentage of transparency, only if transparency is "on"\n')
-	fw.write(u'\topacity 75\n')
+	fw.write(u'\topacity 75\n\n')
     
 	if thlang == u'fr':
 		if icomments:
-			fw.write(u'\n\t# Un commentaire à ajouter au titule,\n')
+			if thlang == u'fr': fw.write(u'\n\t# Un commentaire à ajouter au titule,\n')
+			elif thlang == u'en': fw.write(u'\n\t# A comment to add to the header,\n')
 		if not icoupe:
-			fw.write(u'\tmap-comment "Plan, Projection UTM32, Samoëns, 74, France"\n')
+			if thlang == u'fr': fw.write(u'\tmap-comment "<it>Plan <ss>- Samoëns, 74, France"\n\n')
+			elif thlang == u'en': fw.write(u'\tmap-comment "<it>Map <ss>- Samoëns, 74, France"\n\n')
 		else:
-			fw.write(u'\tmap-comment "Coupe développée, Samoëns, 74, France"\n')
-		
-	elif thlang == u'en':
-		if icomments:
-			fw.write(u'\n\t# Add a comment in the header,\n')
-		if not icoupe:
-			fw.write(u'\tmap-comment "Plan, Projection UTM32, Samoëns, 74, France"\n')
-		else:
-			fw.write(u'\tmap-comment "Extended elevation, Samoëns, 74, France"\n')
+			if thlang == u'fr': fw.write(u'\tmap-comment "<it>Coupe développée <ss>- Samoëns, 74, France"\n\n')
+			if thlang == u'en': fw.write(u'\tmap-comment "<it>Extended elevation <ss>- Samoëns, 74, France"\n\n')
   
 	if icomments:
 		if thlang == u'fr':
@@ -378,14 +421,22 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 		elif thlang == u'en':
 			fw.write(u'\n\t# Print exploration stats (team/name). it is heavy\n')
 			fw.write(u'\t# if the cave is long with lots of explorers\n')
-	fw.write(u'\tstatistics explo-length off\n')
+	fw.write(u'\tstatistics explo-length off\n\n')
   
 	if icomments:
 		if thlang == 'fr':
 			fw.write('\n\t# Afficher le développement et profondeur de la cavité\n')
 		elif thlang == 'en':
 			fw.write('\n\t# Print length and depth\n')
-	fw.write('\tstatistics topo-length off\n')
+	fw.write('\tstatistics topo-length off\n\n')
+
+	if icomments:
+		if thlang == u'fr':
+			fw.write(u'\n\t# Afficher un copyright\n')
+		elif thlang == u'en':
+			fw.write(u'\n\t# print a copyright\n')
+	fw.write(u'\tstatistics copyright all\n\n')
+
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# Nous voulons une légende pour expliquer les symboles.\n') 
@@ -397,20 +448,14 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 			fw.write(u'\t# It is posible to print only the symbols we use (here),\n')
 			fw.write(u'\t# or all of them, used or not with "legend all".\n')
 			fw.write(u'\t# "legend off" = no legende\n')
-	fw.write(u'\tlegend off\n')
-	if icomments:
-		if thlang == u'fr':
-			fw.write(u'\n\t# Afficher un copyright\n')
-		elif thlang == u'en':
-			fw.write(u'\n\t# print a copyright\n')
-	fw.write(u'\tstatistics copyright all\n')
-  
+	fw.write(u'\tlegend off\n\n')
+	
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# Par defaut, la légende est de 14 cm de largeur\n')
 		elif thlang == u'en':
 			fw.write(u'\n\t# Default width legend is 14 cm\n')
-	fw.write(u'\t#legend-width 14 cm\n')
+	fw.write(u'\t#legend-width 14 cm\n\n')
   
 	if icomments:
 		if thlang == u'fr':
@@ -428,7 +473,7 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 			fw.write(u'\t# 100 100, is top right \n')
 			fw.write(u'\t# The header has cardinal points: n, s, ne, sw, etc. \n')
 			fw.write(u'\t# We have to specify one of these points \n')
-	fw.write(u'\tmap-header 0 30 nw\n')
+	fw.write(u'\tmap-header 0 30 nw\n\n')
   
 	if icomments:
 		if thlang == u'fr':
@@ -436,7 +481,7 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 		elif thlang == u'en':
 			fw.write(u'\n\t# header\'s background\n')
 	fw.write(u'\tmap-header-bg off\n')
-	fw.write(u'\n\tlayers on\n')
+	fw.write(u'\n\tlayers on\n\n')
   
 	if icomments:
 		if thlang == u'fr':
@@ -447,14 +492,8 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 			fw.write(u'\t# stations points and stations names\n')
 	fw.write(u'\tsymbol-hide line survey\n')
 	fw.write(u'\t#debug station-names\n')
-  
-	if icomments:
-		if thlang == u'fr':
-			fw.write(u'\n\t# Spécifier qu\'il faut imprimer une grille\n')
-			fw.write(u'\t# au dessous de la topo  \n')
-		elif thlang == u'en':
-			fw.write (u'\n\t# If we want a grid in background  \n')
-	fw.write(u'\t#grid bottom\n')
+	fw.write(u'\tdebug off\n\n')
+
 	if icomments:
 		if thlang == u'fr':
 			fw.write(u'\n\t# Spécifier le pas de la grille, ici 100x100x100 metres\n')
@@ -464,48 +503,51 @@ def writelayout(fw, dictcave, icomments, thlang, icoupe = None):
 	fw.write(u'\t#grid-size 100 100 100 m\n')
 	if icomments:
 		if thlang == u'fr':
-			fw.write(u'\n\t# Si nous ne voulons pas de grille :\n')
+			fw.write(u'\n\t# Spécifier qu\'il faut imprimer une grille\n')
+			fw.write(u'\t# au dessous de la topo \n')
 		elif thlang == u'en':
-			fw.write(u'\n\t# if we do not want any grid:\n')
-	fw.write(u'\tgrid off\n')
-  
-	fw.write(u'\n\t# Titre          \n')
-	fw.write(u'\tcode tex-map\n')
-	if icomments:
-		if thlang == u'en':
-			fw.write(u'\t\t% Output map title as determined by Therion 5.3 is stored in cavename. \n')
-			fw.write(u'\t\t% It will be empty if there are multiple maps selected for any one projection\n')
-			fw.write(u'\t\t% AND there are multiple source surveys identified in the thconfig file \n')
-			fw.write(u'\t\t% i.e. Therion can not infer a unique title from the input data given.\n')
-			fw.write(u'\t\t% This code allows you to define an output map title {cavename} if it happens to be empty\n')
-		elif thlang == u'fr':
-			fw.write(u'\t\t% Le titre de la carte determiné par Therion 5.3 est enregistré dans la variable cavename. \n')
-			fw.write(u'\t\t% Elle est vide lorsque plusieurs maps sont sélectionnées\n')
-			fw.write(u'\t\t% et s\'il y a différentes données topograhiques dans le thconfig \n')
-			fw.write(u'\t\t% i.e. Therion ne peut donner un titre unique à partir des inputs.\n')
-			fw.write(u'\t\t% Ce code permet alors de définir un titre {cavename} dans le cas où il est vide\n')
-	fw.write(u'\t\t\edef\temp{\\the\cavename}   ')
-	if thlang == u'fr': fw.write(u'% cavename pour Therion\n')
-	if thlang == u'en': fw.write(u'% cavename from Therion\n')
-	fw.write(u'\t\t\edef\\nostring{}            ')
-	if thlang == u'fr': fw.write(u' % string vide\n')
-	if thlang == u'en': fw.write(u' % empty string\n')
-	fw.write(u'\t\t\ifx\\temp\\nostring          ')
-	if thlang == u'fr': fw.write(u' % test si cavename est vide\n')
-	if thlang == u'en': fw.write(u' % test if cavename is empty\n')
-	if thlang == u'fr': fw.write(u'\t\t\t% s\'il est vide, réassigne cavename pour décrire les maps sélectionnées comme un groupe\n')
-	if thlang == u'en': fw.write(u'\t\t\t% if empty reassign cavename to describe selected maps as a group\n')
-	fw.write(u'\t\t\t\cavename={' + dictcave[3] + u'} 		\n')
-	fw.write(u'\t\t\else ')
-	if thlang == u'fr': fw.write(u'% Si non, alors garde la valeur de Therion, ou assigne un cavename ici pour l\'écraser\n')
-	if thlang == u'en': fw.write(u'% if not empty keep the value set by therion, or assign an override cavename here\n')
-	fw.write(u'\t\t\\fi\n')
-	fw.write(u'\tendcode  \n\n')  
+			fw.write (u'\n\t# If we want a grid in background  \n')
+	fw.write(u'\t#grid bottom\n\n')
+	fw.write(u'\tgrid off\n\n')
+
+	#fw.write(u'\n\t# Titre          \n')
+	#fw.write(u'\tcode tex-map\n')
+	#if icomments:
+	#	if thlang == u'en':
+	#		fw.write(u'\t\t% Output map title as determined by Therion is stored in \\cavename. \n')
+	#		fw.write(u'\t\t% It will be empty if there are multiple maps selected for any one projection\n')
+	#		fw.write(u'\t\t% AND there are multiple source surveys identified in the thconfig file \n')
+	#		fw.write(u'\t\t% i.e. Therion can not infer a unique title from the input data given.\n')
+	#		fw.write(u'\t\t% This code allows you to define an output map title {cavename} if it happens to be empty\n')
+	#	elif thlang == u'fr':
+	#		fw.write(u'\t\t% Le titre de la carte determiné par Therion est enregistré dans la variable \\cavename. \n')
+	#		fw.write(u'\t\t% Elle est vide lorsque plusieurs maps sont sélectionnées\n')
+	#		fw.write(u'\t\t% et s\'il y a différentes données topograhiques dans le thconfig \n')
+	#		fw.write(u'\t\t% i.e. Therion ne peut donner un titre unique à partir des inputs.\n')
+	#		fw.write(u'\t\t% Ce code permet alors de définir un titre {cavename} dans le cas où il est vide\n')
+	#fw.write(u'\t\t\edef\temp{\\the\cavename}   ')
+	#if thlang == u'fr': fw.write(u'% cavename pour Therion\n')
+	#elif thlang == u'en': fw.write(u'% cavename from Therion\n')
+	#fw.write(u'\t\t\edef\\nostring{}            ')
+	#if thlang == u'fr': fw.write(u' % string vide\n')
+	#elif thlang == u'en': fw.write(u' % empty string\n')
+	#fw.write(u'\t\t\ifx\\temp\\nostring          ')
+	#if thlang == u'fr': fw.write(u' % test si cavename est vide\n')
+	#elif thlang == u'en': fw.write(u' % test if cavename is empty\n')
+	#if thlang == u'fr': fw.write(u'\t\t\t% s\'il est vide, réassigne cavename pour décrire les maps sélectionnées comme un groupe\n')
+	#elif thlang == u'en': fw.write(u'\t\t\t% if empty reassign cavename to describe selected maps as a group\n')
+	#fw.write(u'\t\t\t\cavename={' + dictcave[3] + u'} 		\n')
+	#fw.write(u'\t\t\else ')
+	#if thlang == u'fr': fw.write(u'% Si non, alors garde la valeur de Therion, ou assigne un cavename ici pour l\'écraser\n')
+	#elif thlang == u'en': fw.write(u'% if not empty keep the value set by therion, or assign an override cavename here\n')
+	#fw.write(u'\t\t\\fi\n')
+	#fw.write(u'\tendcode  \n\n')  
 	fw.write(u'endlayout\n')
 	
 	return
 	
-def writethc(pdata):
+
+def writethc(pdata, cavename = None, istructure = True):
 	"""
 		Function to write the config.thc file
 		
@@ -523,7 +565,9 @@ def writethc(pdata):
 		Licence: CCby-nc
 	"""
 	# Open the file
-	f1w = open(pdata,'w')
+	
+	if istructure: f1w = open(cavename.replace(u' ', u'_') + '/' + pdata,'w')
+	else: f1w = open(pdata,'w')
 	
 	f1w.write(u'encoding utf-8 \n\n') 
 	f1w.write(u'# File to set up specific settings for Therion drawing outputs \n')
@@ -842,11 +886,6 @@ def writethc(pdata):
 	f1w.write(u'\t\t\t\telse: process_label(pos,rot); fi;\n')
 	f1w.write(u'\t\t\tfi;\n')
 	f1w.write(u'\t\tenddef;\n\n')
-	f1w.write(u'\t\t# For point height with P or C prefixe \n')
-	f1w.write(u'\t\t# use “point 0 0 height -value [+10 m]” \n')
-	f1w.write(u'\t\t# or “point 0 0 height -value [-85 m]” \n')
-	f1w.write(u'\t\t# in your data to get E10 or P85\n')
-	f1w.write(u'\t\tverbatimtex \def\thheightpos{E}\def\thheightneg{P} etex \n\n')
 	f1w.write(u'\t\t# definition of new lines/symbols\n\n')
 	f1w.write(u'\t\t#    Line symbol for strata for cross sections. It works exactly as line section \n')
 	f1w.write(u'\t\t#    symbol but you should use -clip off option:\n')
@@ -926,12 +965,6 @@ def writethc(pdata):
 	f1w.write(u'\t\t\t\tt1:=arctime (cur) of P;\n')
 	f1w.write(u'\t\t\tendfor;\n')
 	f1w.write(u'\t\tenddef;\n\n')
-	f1w.write(u'\t\t# Modifier l aspect et les données des statistiques de longueur affichees\n')
-	f1w.write(u'\t\t#code tex-map\n')
-	f1w.write(u'\t\t#	\cavelength{1330\thinspace{}m} \n')
-	f1w.write(u'\t\t#	+ 150\thinspace{}m estimes}\n')
-	f1w.write(u'\t\t#	\cavedepth{243\thinspace{}m}\n\n')
-	f1w.write(u'\tendcode\n\n')
 	f1w.write(u'endlayout \n\n\n')
 	
 	f1w.write(u'#------------------------------\n')
@@ -940,53 +973,6 @@ def writethc(pdata):
 	f1w.write(u'\tcode tex-map\n')
 	f1w.write(u'\t\t\\framethickness=0.5mm\n')
 	f1w.write(u'endlayout\n\n\n')
-
-	f1w.write(u'#CODE TO CUSTOMISE ATLAS OUTPUT\n')
-	f1w.write(u'#------------------------------\n')
-	f1w.write(u'layout LayoutAtlasNorthArrow\n')
-	f1w.write(u'#This code is a redefinition of the default atlas definition\n')
-	f1w.write(u'#that includes both north arrow & scale bar beside the navigation pane\n\n')
-	f1w.write(u'code tex-atlas\n')
-	f1w.write(u'\t\def\dopage{%\n')
-	f1w.write(u'\t\t\\vbox{\centerline{\\framed{\mapbox}}\n')
-	f1w.write(u'\t\t\t\\bigskip\n')
-	f1w.write(u'\t\t\t\line{%\n')
-	f1w.write(u'\t\t\t\t\\vbox to \ht\\navbox{\n')
-	f1w.write(u'\t\t\t\t\t\hbox{\size[20]\the\pagelabel\n')
-	f1w.write(u'\t\t\t\t\t\ifpagenumbering\space(\the\pagenum)\\fi\n')
-	f1w.write(u'\t\t\t\t\t\space\size[16]\the\pagename}\n')
-	f1w.write(u'\t\t\t\t\t\ifpagenumbering\n')
-	f1w.write(u'\t\t\t\t\t\t\medskip\n')
-	f1w.write(u'\t\t\t\t\t\t\hbox{\qquad\qquad\n')
-	f1w.write(u'\t\t\t\t\t\t\\vtop{%\n')
-	f1w.write(u'\t\t\t\t\t\t\t\hbox to 0pt{\hss\showpointer\pointerN\hss}\n')
-	f1w.write(u'\t\t\t\t\t\t\t\hbox to 0pt{\llap{\showpointer\pointerW\hskip0.7em}%\n')	
-	f1w.write(u'\t\t\t\t\t\t\t\\raise1pt\\hbox to 0pt{\\hss$\\updownarrow$\\hss}%\n')
-	f1w.write(u'\t\t\t\t\t\t\t\\raise1pt\hbox to 0pt{\hss$\leftrightarrow$\hss}%\n')
-	f1w.write(u'\t\t\t\t\t\t\t\\rlap{\hskip0.7em\showpointer\pointerE}}\n')
-	f1w.write(u'\t\t\t\t\t\t\t\hbox to 0pt{\hss\showpointer\pointerS\hss}\n')
-	f1w.write(u'\t\t\t\t\t\t}\qquad\qquad\n')
-	f1w.write(u'\t\t\t\t\t\t\\vtop{\n')
-	f1w.write(u'\t\t\t\t\t\t\t\\def\\arr{$\\uparrow$}\n')
-	f1w.write(u'\t\t\t\t\t\t\t\showpointerlist\pointerU\n')
-	f1w.write(u'\t\t\t\t\t\t\t\def\\arr{$\downarrow$}\n')
-	f1w.write(u'\t\t\t\t\t\t\t\showpointerlist\pointerD\n')
-	f1w.write(u'\t\t\t\t\t\t}\n')
-	f1w.write(u'\t\t\t\t\t}\n')
-	f1w.write(u'\t\t\t\t\t\\fi\n')
-	f1w.write(u'\t\t\t\t\t\\vss\n')
-	f1w.write(u'\t\t\t\t}\n')
-	f1w.write(u'\t\t\t\t\hss\n')
-	f1w.write(u'\t\t\t\t\\vbox to \ht\\navbox{\n')
-	f1w.write(u'\t\t\t\t\t\ifnortharrow\hbox to 0pt{\hss\\northarrow\qquad}\\fi\n')
-	f1w.write(u'\t\t\t\t\t\\vss\n')
-	f1w.write(u'\t\t\t\t\t\ifscalebar\hbox to 0pt{\hss\scalebar\qquad}\\fi\n')
-	f1w.write(u'\t\t\t\t}\n')
-	f1w.write(u'\t\t\t\t\\box\\navbox\n')
-	f1w.write(u'\t\t\t}\n')
-	f1w.write(u'\t\t}\n')
-	f1w.write(u'\t}\n\n')
-	f1w.write(u'endlayout LayoutAtlasNorthArrow\n\n\n')
 	
 	f1w.write(u'#------------------------------\n')
 	f1w.write(u'layout layoutcontinuation  \n')
@@ -1012,7 +998,7 @@ def writethc(pdata):
 	f1w.write(u'layout northarrowMG\n\n')
 	f1w.write(u'\tcode metapost\n')
 	f1w.write(u'\t\t# If you want to get both, magnetic and geographic north,\n')
-	f1w.write(u'\t\t# with \cartodate ?\n')
+	#f1w.write(u'\t\t# with \cartodate ?\n')
 	f1w.write(u'\t\tdef s_northarrow (expr rot) =\n')
 	f1w.write(u'\t\t\t%valscal=1.2; % scale your north arrow here\n')
 	f1w.write(u'\t\t\tvalscal=0.7; % scale your north arrow here\n')
@@ -1092,10 +1078,24 @@ def writethc(pdata):
 	return
 
 	
-def checkfiles(pdata, Errorfiles):
+def checkfiles(pdata, Errorfiles = True):
 	"""
-		Function to check if the file exists
-		Raise error if file exists
+	Function to check if the file exists
+	Raise error if file exists
+
+	INPUTS:
+		pdata         : variable that sets the file to check
+		Errorfiles    : boolean; if True (default), if pdata already exists, the program stops;
+		                         if False, the programme erase the old pdata
+	   
+	OUTPUTS:
+		None
+		
+	USAGE:
+		checkfiles(pdata, Errorfiles = False)
+		checkfiles(pdata)
+		
+	Author: Xavier Robert, Lima 2016/06/27
 	"""
 	# Check if file exists, if not, raise an error
 	if os.path.isfile(pdata) == True :

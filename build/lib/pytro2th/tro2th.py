@@ -1,6 +1,11 @@
 ######!/usr/bin/env python
 # -*- coding: utf8 -*-
 # coding: utf8
+
+# Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
 """
 	!---------------------------------------------------------!
 	!                                                         !
@@ -28,7 +33,7 @@
 # Must be at the beginning of the file
 from __future__ import division
 #from __future__ import unicode_literals
-import sys, os
+import sys, os, wget
 
 # Import Python modules
 #modulesNames = ['sys', 'warnings']
@@ -42,17 +47,17 @@ import sys, os
 #		sys.exit("ERROR : Module " + module + " not present. \n\n Please, install it \
 #			      \n\n Edit the source code for more information")
 
-from buildparam import *
-from vtopotools import *
-from datathwritetools import *
-from buildthconfig import *
+from .buildparam import *
+from .vtopotools import *
+from .datathwritetools import *
+from .buildthconfig import *
 
 
 def tro2th(fle_tro_fnme = None, fle_th_fnme = None, 
 			thlang = u'fr',
 			cavename = None, 
 			icomments = True, icoupe = True, 
-			ithconfig = True, thconfigfnme = None, 
+			ithconfig = True, istructure = True, thconfigfnme = None, 
 			ithc = True, thcpath = None, thcfnme = u'config.thc', 
 			sourcefile = None, xviscale = 1000, xvigrid = 10, scale = 500,
 			Errorfiles = True):
@@ -79,6 +84,7 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 			icomments    : (Boolean) To add (True, by default) or not (False) comments in the produced files
 			icoupe       : (Boolean) To set (True, by default) or not (False) an extended-elevation layout in the .thconfig file
 			ithconfig    : (Boolean) To set if the thconfig file is created (True, by default) or not 
+			istructure   : (Boolean) To set if the structure and the addditional files are created (True, by default) or not 
 			thconfigfnme : (string) Path and name of the thconfig file. 
 			               If None (by default), path and name build from the .tro file
 			ithc         : (Boolean) To build (True, by default) or not (False) a config file config.thc 
@@ -145,19 +151,15 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 	elif thlang in [u'en',u'EN', u'En', u'eN']: thlang = u'en'
 	else: raise NameError(u'ERROR: Language %s not implemented\n'
 	                      u'       Use "en" instead' % thlang )
-	
+	print(u'____________________________________________________________\n\n\t\tTRO 2 THERION\n____________________________________________________________\n')
 	if thlang == u'fr':
-		print(u'____________________________________________________________\n\n\t\tTRO 2 THERION\n____________________________________________________________\n')
 		print(u'\nEcrit par Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
-		print(u'____________________________________________________________')
-		print(u'')
 	elif thlang == u'en':
-		print(u'____________________________________________________________\n\n\t\tTRO 2 THERION\n____________________________________________________________\n')
 		print(u'\nWritten by Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
-		print(u'____________________________________________________________')
-		print(u'')
+	print(u'____________________________________________________________\n\n')
 	
-	coordsyst = None		
+	coordsyst = None
+	coordinates = None
 	if fle_tro_fnme is not None:
 		if fle_tro_fnme[-4:] != u'.tro':
 			fle_tro_fnme = fle_tro_fnme + u'.tro'
@@ -168,19 +170,22 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 		
 		if fle_th_fnme is None:
 			# convert tro file to th file
-			cavename, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, 
-			                                              icomments = icomments, icoupe = icoupe, 
+			print('1')
+			cavename, coordinates, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, 
+			                                              icomments = icomments, icoupe = icoupe, istructure = istructure, 
 			                                              thlang = thlang, Errorfiles = Errorfiles)
 		else:
-			cavename, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, fle_th_fnme, cavename,
-			                                               icomments = icomments, icoupe = icoupe, 
+			print(2)
+			cavename, coordinates, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, fle_th_fnme, cavename,
+			                                               icomments = icomments, icoupe = icoupe, istructure = istructure,
 			                                               thlang = thlang, Errorfiles = Errorfiles)
-		
 		if thlang == u'fr': print(u'\tFichier Therion %s construit à partir des données %s' %(fle_th_fnme, fle_tro_fnme))
 		elif thlang == u'en': print(u'\tFile %s built from %s' %(fle_th_fnme, fle_tro_fnme))
 	else:
-		if thlang == u'fr': print(u'\tPas de fichier .tro en entrée, pas de fichier .th créé...')
-		elif thlang == u'en': print(u'\tNo .tro File input, no .th file created...')
+		if thlang == u'fr': print(u'\tPas de fichier .tro en entrée, pas de fichier de données .th créé...')
+		elif thlang == u'en': print(u'\tNo .tro File input, no .th data file created...')
+		# Build here the new structure:
+		if istructure: build_structure(u'cave', Errorfiles = True)
 
 	if sourcefile is None:
 		if fle_th_fnme is None:
@@ -196,31 +201,154 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 	# build thc file
 	if ithc :
 		if  thcpath is not None :
-			writethc(thcpath + thcfnme)
+			# Download the config file from my github page
+			try:
+				wget.download('https://raw.githubusercontent.com/robertxa/Th-Config-Xav/master/config.thc', 
+				               thcpath)
+							   #thcpath + thcfnme)
+			except HTTPError:
+				if thcpath[-1] not in ['/', '\\']: thcpath = thcpath + '/'
+				writethc(thcpath + thcfnme, istructure)
+			except FileNotFoundError:
+				if thcpath[-1] not in ['/', '\\']: thcpath = thcpath + '/'
+				writethc(thcpath + thcfnme, istructure)
 		else:
-			writethc(thcfnme)
+			# Download the config file from my github page
+			try:
+				if istructure: wget.download('https://raw.githubusercontent.com/robertxa/Th-Config-Xav/master/config.thc', 
+				               cavename.replace(u' ', u'_') + '/')
+				else: wget.download('https://raw.githubusercontent.com/robertxa/Th-Config-Xav/master/config.thc')
+			except HTTPError:
+				writethc(thcfnme, cavename, istructure)
+			except FileNotFoundError:
+				writethc(thcfnme, cavename, istructure)
 	
 	# build thconfig file
+	# Needs to be change to take in account istructure
 	if ithconfig :
 		# write the file
-		if thconfigfnme is None or thconfigfnme == u'':
+		if thconfigfnme is None or thconfigfnme == u'' or thconfigfnme == u' ':
 			if fle_th_fnme is None:	thconfigfnme = cavename.replace(u' ', u'_') + u'.thconfig'
 			else: thconfigfnme = fle_th_fnme[0:-3] + u'.thconfig'
 		
-		if thcpath is not None:
+		if thcpath is not None: 
 			thcfnme = thcpath + thcfnme
-		writethconfig(thconfigfnme, icomments, icoupe, thlang,
+			writethconfig(cavename.replace(u' ', u'_') + thconfigfnme, icomments, icoupe, thlang,
 			              dictcave,
 		                  ithc, thcfnme)
+		else:
+			thcfnme = thcfnme
+			writethconfig(cavename.replace(u' ', u'_') + thconfigfnme, icomments, icoupe, thlang,
+			              dictcave,
+		                  ithc, cavename.replace(u' ', u'_') + u'/config.thc')
+
+	if istructure: 
+		# build cavename-tot.th file
+		f3w = open(cavename.replace(u' ', u'_') + '/' + cavename.replace(u' ', u'_') + '-tot.th', 'w')
+		write_thtot(f3w, cavename,  icomments, thlang)
+		f3w.closed
+		print(u'\tFile ' + cavename.replace(u' ', u'_') + u'/' + cavename.replace(u' ', u'_') + u'-tot.th written...\n')	
+
+		# build cavename-maps.th file
+		f4w = open(cavename.replace(u' ', u'_') + u'/' + cavename.replace(u' ', u'_') + '-maps.th', 'w')
+		write_thmaps(f4w, cavename, icomments, thlang)
+		f4w.closed
+		print(u'\tFile ' + cavename.replace(u' ', u'_') + u'/' + cavename.replace(u' ', u'_') + u'-maps.th written...\n\n')
+
+		# build Legends/entrances-coordinates.th file
+		f5w = open(cavename.replace(u' ', u'_') + '/Legends/entrances_coordinates.th', 'w')
+		write_thcoords(f5w, cavename, coordinates, coordsyst, icomments, thlang)
+		f5w.closed
+		print(u'\tFile ' + cavename.replace(u' ', u'_') + u'/Legends/entrances_coordinates.th written...\n\n')
+
 	print(u'____________________________________________________________')
 	print(u'')
 	
 	return
-	
 
+
+def build_structure(cavename, Errorfiles = True):
+	"""
+	Check and build if needed the new structure:	
+		-Cave/
+			-Data/
+				-cavename.th
+				(-cavename.th2)
+			-Legends/
+				-entrances_coordinates.th
+			-Outputs/
+				-outputs.txt
+			-Cavename.thconfig
+			-cavename-tot.th
+			-cavename-maps.th
+			-config.thc
 	
+	INPUTS:
+		cavename = name of the cave that is used to build all the folders and file structure
+		Errorfiles = Boolean; If True (Default), the program stops if the structure already exists
+							  If False or none, if the structure exists, it is erased
+
+	OUTPUTS:
+		None, except a new structure
+
+	USAGE:
+		build_structure(cavename, Errorfiles)
+
+	"""
+	
+	# check if the folder cavename/ exists
+	if os.path.exists(cavename.replace(u' ', u'_')):
+		if Errorfiles:
+			# Stop
+			raise NameError(u'ERROR : Folder {FileNa} does exist'.format(FileNa=str(cavename.replace(u' ', u'_'))))
+		else:
+			print(u'WARNING: I have erased folder %s' % cavename.replace(u' ', u'_')) 
+			if not os.path.exists(cavename.replace(u' ', u'_') + u'/Data'): os.mkdir(cavename.replace(u' ', u'_') + u'/Data')
+			if not os.path.exists(cavename.replace(u' ', u'_') + u'/Legends'): os.mkdir(cavename.replace(u' ', u'_') + u'/Legends')
+			if not os.path.exists(cavename.replace(u' ', u'_') + u'/Outputs'): 
+				os.mkdir(cavename.replace(u' ', u'_') + u'/Outputs')
+				# Add outputs.txt file
+				mkfle_output_txt(cavename.replace(u' ', u'_'))
+	#	- if no, create it and create the other files
+	else:
+		# Create the subfolders
+		os.mkdir(cavename.replace(u' ', u'_'))
+		os.mkdir(cavename.replace(u' ', u'_') + u'/Data')
+		os.mkdir(cavename.replace(u' ', u'_') + u'/Outputs')
+		# Add outputs.txt file
+		mkfle_output_txt(cavename.replace(u' ', u'_'))
+		os.mkdir(cavename.replace(u' ', u'_') + u'/Legends')
+		
+	return
+
+
+
+def mkfle_output_txt(cavename):
+	"""
+	Build the file Output.txt in the folder cavename/Outputs/
+
+	INPUTS:
+		cavename = name of the cave
+
+	OUTPUTS:
+		None
+
+	USAGE:
+		create_output_txt(cavename)
+	"""
+	# Open the cavename/Outputs/outputs.txt file
+	f1w = open(cavename.replace(u' ', u'_') + u'/Outputs/outputs.txt','w')
+	f1w.write(u'Folder where Therion outputs are exported \n\n')
+	# close the cavename/Outputs/outputs.txt file
+	f1w.closed
+	print(u'\tFile ' + cavename.replace(u' ', u'_') + u'/Outputs/outputs.txt written...')
+	
+	return
+
+
+
 def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None, 
-                icomments = True, icoupe = True, thlang = u'fr', Errorfiles = True):	
+                icomments = True, icoupe = True, istructure = True, thlang = u'fr', Errorfiles = True):	
 	"""
 		Function that manages the tro 2 th conversion
 		
@@ -229,11 +357,20 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 			fle_th_fnme  : path and file name of the .th file to create. 
 			               If ommitted, set to None, and this varaible will be set in function of the fle_tro_fnme or cavename
 			cavename     : Name of the cave. If ommitted, it is set to None, and it is get from the .tro file 
-        	Errorfiles   : True (by default if ommitted) to get an error if the .th file already exists.
+        	icomments    : (Boolean) To add (True, by default) or not (False) comments in the produced files
+			icoupe       : (Boolean) To set (True, by default) or not (False) an extended-elevation layout in the .thconfig file
+			istructure   : (Boolean) To set if the structure and the addditional files are created (True, by default) or not 
+			thlang       : (string) String that set the language. 'fr' by default. 
+			               If you need english, change 'fr' to 'en' in the function definition
+			              set 'fr' for french
+			              set 'en' for english
+			
+			Errorfiles   : True (by default if ommitted) to get an error if the .th file already exists.
 	                       False if only a warning...
 		OUTPUTS:
 			new .th file with surveyed data for Therion
 			cavename      : Name of the cave from the .tro file
+			coordinates   : Coordinates of the entrance
 			coordsyst     : Coordinates system used by the .tro file
 			
 		USAGE:
@@ -263,6 +400,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	lines = convert_text(lines)
 	
 	# read the header
+	coordinates = None
 	cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(lines)
 	
 	if cavename is None or cavename == '' or cavename == ' ':
@@ -270,15 +408,20 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	
 	if fle_th_fnme is None:
 		fle_th_fnme = cavename.replace(u' ', u'_') + u'.th'
-		print fle_th_fnme
+		print (fle_th_fnme)
 	if fle_th_fnme[-3:] != u'.th':
 		fle_th_fnme = fle_th_fnme + u'.th'	
 	
+	
+	# Build here the new structure:
+	if istructure: build_structure(cavename, Errorfiles)
+
 	# check if file exists... 
 	checkfiles(fle_th_fnme, Errorfiles)
+	
 	# open the .th file
-
-	fle_th = open (fle_th_fnme, 'w')
+	if istructure: fle_th = open (cavename.replace(u' ', u'_') + '/Data/' + fle_th_fnme, 'w')
+	else: fle_th = open (fle_th_fnme, 'w')
 	# write the .th header
 	writeheader_th(fle_th, cavename, entrance)
 	
@@ -313,12 +456,12 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	fle_th.write(u'\nendsurvey\n')
 	fle_th.close
 	
-	print fle_th_fnme
+	#print (fle_th_fnme)
 	
 	if thlang == u'fr': print (u'\tFichier %s écrit !' % fle_th_fnme)
 	elif thlang == u'en': print (u'\tFile %s written!' % fle_th_fnme)
 	
-	return cavename, coordsyst, fle_th_fnme
+	return cavename, coordinates, coordsyst, fle_th_fnme
 
 
 if __name__ == u'__main__':

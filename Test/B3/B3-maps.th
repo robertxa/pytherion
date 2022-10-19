@@ -1,0 +1,16 @@
+encoding utf-8 
+
+# Copyright (C) 2022 Xavier Robert <xavier.robert***@***ird.fr>
+# Ce travail est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :
+#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>
+
+map MP-B3-plan-tot -title "B3"
+	SP-B3-1
+	#break
+	#SP-B3-2
+endmap
+map MC-B3-coupe-tot -title "B3"
+	SC-B3-1
+	#break
+	#SC-B3-2
+endmap

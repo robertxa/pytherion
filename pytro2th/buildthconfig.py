@@ -38,8 +38,7 @@ import numpy as np
 
 ########################
 
-def builddictcave(
-                  thlang = u'en', icomments = True, icoupe = True, Errfiles = True,
+def builddictcave(thlang = u'en', icomments = True, icoupe = True, Errfiles = True,
                   thcfile = True, thcfnme = u'config.thc', thcpath = None, 
                   thconfigfile = True, thconfigpath = None, thconfigfnme= u'Test.thconfig'):
 	"""
@@ -157,13 +156,13 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	#for cfile in dictcave[0]:
 	#	f2w.write(u'source ' + cfile + u'\n')
 	#file.write(u'input Data/%s.th\n\n' %(cavename.replace(u' ', u'_')))
-	f2w.write(u'input %s-tot.th\n\n' %(dictcave[0]))	# Maybe to change for cavename
+	f2w.write(u'input %s-tot.th\n\n' %(dictcave[0][0][-3:]))	# Maybe to change for cavename
 	f2w.write(u'\n')
 	
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Appeller le fichier de définition des maps\n')
 		elif thlang == u'en': f2w.write(u'# Call maps definition file\n')
-	f2w.write(u'input %s-maps.th\n\n' %(dictcave[0]))	# Maybe to change for cavename
+	f2w.write(u'input %s-maps.th\n\n' %(dictcave[0][0][-3:]))	# Maybe to change for cavename
 	f2w.write(u'\n')
 
 	if icomments: 

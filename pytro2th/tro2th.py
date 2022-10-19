@@ -47,10 +47,10 @@ import sys, os, wget
 #		sys.exit("ERROR : Module " + module + " not present. \n\n Please, install it \
 #			      \n\n Edit the source code for more information")
 
-from buildparam import *
-from vtopotools import *
-from datathwritetools import *
-from buildthconfig import *
+from .buildparam import *
+from .vtopotools import *
+from .datathwritetools import *
+from .buildthconfig import *
 
 
 def tro2th(fle_tro_fnme = None, fle_th_fnme = None, 
@@ -158,7 +158,8 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 		print(u'\nWritten by Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
 	print(u'____________________________________________________________\n\n')
 	
-	coordsyst = None		
+	coordsyst = None
+	coordinates = None
 	if fle_tro_fnme is not None:
 		if fle_tro_fnme[-4:] != u'.tro':
 			fle_tro_fnme = fle_tro_fnme + u'.tro'
@@ -169,10 +170,12 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 		
 		if fle_th_fnme is None:
 			# convert tro file to th file
+			print('1')
 			cavename, coordinates, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, 
 			                                              icomments = icomments, icoupe = icoupe, istructure = istructure, 
 			                                              thlang = thlang, Errorfiles = Errorfiles)
 		else:
+			print(2)
 			cavename, coordinates, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, fle_th_fnme, cavename,
 			                                               icomments = icomments, icoupe = icoupe, istructure = istructure,
 			                                               thlang = thlang, Errorfiles = Errorfiles)
@@ -234,7 +237,7 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 			              dictcave,
 		                  ithc, thcfnme)
 		else:
-			thcfnme = thcpath + thcfnme
+			thcfnme = thcfnme
 			writethconfig(cavename.replace(u' ', u'_') + thconfigfnme, icomments, icoupe, thlang,
 			              dictcave,
 		                  ithc, cavename.replace(u' ', u'_') + u'/config.thc')
@@ -297,7 +300,7 @@ def build_structure(cavename, Errorfiles = True):
 	if os.path.exists(cavename.replace(u' ', u'_')):
 		if Errorfiles:
 			# Stop
-			raise NameError(u'ERROR : Filder {FileNa} does exist'.format(FileNa=str(cavename.replace(u' ', u'_'))))
+			raise NameError(u'ERROR : Folder {FileNa} does exist'.format(FileNa=str(cavename.replace(u' ', u'_'))))
 		else:
 			print(u'WARNING: I have erased folder %s' % cavename.replace(u' ', u'_')) 
 			if not os.path.exists(cavename.replace(u' ', u'_') + u'/Data'): os.mkdir(cavename.replace(u' ', u'_') + u'/Data')
@@ -397,7 +400,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	lines = convert_text(lines)
 	
 	# read the header
-	coordinates == None
+	coordinates = None
 	cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(lines)
 	
 	if cavename is None or cavename == '' or cavename == ' ':

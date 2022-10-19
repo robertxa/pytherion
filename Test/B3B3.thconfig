@@ -1,0 +1,333 @@
+encoding utf-8 
+
+# File written by pytro2th (Xavier Robert)  
+# Copyright (C) 2022 Xavier Robert <xavier.robert***@***ird.fr> 
+# This work is under the licence Creatice Commonc CC-by-nc-sa v.4 
+
+# 1-SOURCES  
+# La ligne source specifie le fichier où sont les données topo 
+# (Au fichier "nomcavite.th" il faudra avoir une ligne 
+# "input "nomcavite.th2" pour spécifier le fichier où se trouvent 
+# les données du dessin, comme ça, ce fichier thconfig appelera  
+# nomcavite.th" et a son tour, "nomcavite.th" appelera 
+# "nomcavite.th2") 
+input .th-tot.th
+
+
+# Appeller le fichier de définition des maps
+input .th-maps.th
+
+
+# Appeller le fichier de coordonnées de la cavité
+#input legends/entrances_coordinates.th
+
+# Ajoute un fichier de configuration
+# Voir https://github.com/robertxa/Th-Config-Xav pour un exemple
+input B3/config.thc  
+
+
+# 2-LAYOUT    
+# Debut de la définition du Layout "xviexport" 
+layout xviexport 
+	# Echelle a laquelle on veut dessiner la topo 
+	scale 1 1000 
+	# Taille de la grille 
+	grid-size 10 10 10 m 
+	# Mettre la grille en arrière plan 
+	grid bottom 
+endlayout 
+# Fin de la définition du layout "xviexport"  
+
+
+layout my_layout
+
+
+	# Appelle le(s) fichier(s) de configuration (Layout config dans le fichier config.thc file)
+	copy drawingconfig 
+	#copy Coords_Header_B3
+	copy drawingconfig
+	copy headerl
+	copy langue-fr
+
+
+	# Titre du pdf 
+	doc-title "B3"
+
+	# Auteur du pdf 
+	doc-author "Xavier Robert"
+
+
+	# Pour faire la topo dans le système UTM  
+	# Décommenter la ligne, et remplacer xx par la zone UTM
+	cs EPSG:27572 
+
+
+	# "base-scale" specifie l'échelle à laquelle nous avons
+	# dessiné nos croquis. Par defaut, c'est 1/200.
+	# Si on a utilise une autre échelle, 
+	# il faut enlever le "#" et spécifier l échelle vraiment
+	# employée, c'est le cas apres avoir dessiné la topo
+	# sur un cheminement exporté avec le layout "xviexport"
+	# (voir en bas)
+	base-scale 1 1000
+
+
+	# "scale" : specification de l'échelle,
+	# pour imprimer la topo. La combination entre scale et base-scale
+	# controlle le gros des lignes, rotation, etc, convenable
+	# pour faire l'amplification-reduction entre dessin(s) et
+	# le resultat de l imprimante
+	# C'est tres important de s'assurer que la configuration de
+	# l'imprimante ne spécifie pas l'option "Fit in page"
+	# ou similaire, sinon, l'échelle sera changée pendant
+	# l'impression
+	#scale 1 1000
+	scale 1 500
+
+
+	# Echelle graphique de 50.0 m d'ampleur
+	scale-bar 50.0 m
+
+
+	# Pour faire une rotation
+	#rotate 2.25
+
+
+	# Une couleur de fond, 85% blanc = 15% noir
+	#color map-bg 85
+
+
+	# Une couleur de topo (RVB entre 0 et 100)
+	color map-fg [100 100 80]
+
+
+	# la topo est transparente (on peut voir les galeries sousjacentes)
+	# Par défaut, donc, pas vraiment besoin de specifier
+	transparency on
+
+
+	# Pourcentage de transparence, marche seulement si transparency est "on"
+	opacity 75
+
+
+	# Un commentaire à ajouter au titule,
+	map-comment "<it>Plan <ss>- Samoëns, 74, France"
+
+
+	# Afficher les statistiques d'explo par équipe/nom. C'est lourd
+	# si la cavite est importante et qu'il y a beaucoup d'explorateurs
+	statistics explo-length off
+
+
+	# Afficher le développement et profondeur de la cavité
+	statistics topo-length off
+
+
+	# Afficher un copyright
+	statistics copyright all
+
+
+	# Nous voulons une légende pour expliquer les symboles.
+
+	#	"on" imprimera seulement la légende des symboles dessinés sur la topo
+
+	#	Si l'on veut pour tous les symboles, utilisés ou pas, il faut indiquer "all".
+	# "legend off" = pas de légende
+	legend off
+
+
+	# Par defaut, la légende est de 14 cm de largeur
+	#legend-width 14 cm
+
+
+	# Spécification de la position de la manchette : interieur
+	# occuppée par le titule, auteurs, etc. Nous pouvons indiquer
+	# les cordonnées du point de la topo ou l'on veut la manchette :
+	# 0 0, c'est en bas, à gauche
+	# 100 100, c'est en haut, à droite
+	# La manchette a des "points cardinaux" : n, s, ne, sw, etc.
+	# Il faut spécifier un de ces points 
+	map-header 0 30 nw
+
+
+	# Arrière plan de la manchette
+	map-header-bg off
+
+	layers on
+
+
+	# Options pour afficher le squelette topo,
+	# les points et le nom des stations topos
+	symbol-hide line survey
+	#debug station-names
+	debug off
+
+
+	# Spécifier le pas de la grille, ici 100x100x100 metres
+	# (Trois dimensions, oui, ça sert pour la coupe aussi) 
+	#grid-size 100 100 100 m
+
+	# Spécifier qu'il faut imprimer une grille
+	# au dessous de la topo 
+	#grid bottom
+
+	grid off
+
+endlayout
+
+
+layout my_layout-coupe
+
+
+	# Appelle le(s) fichier(s) de configuration (Layout config dans le fichier config.thc file)
+	copy drawingconfig 
+	#copy Coords_Header_B3
+	copy drawingconfig
+	copy header_coupe 
+	copy langue-fr
+
+
+	# Titre du pdf 
+	doc-title "B3"
+
+	# Auteur du pdf 
+	doc-author "Xavier Robert"
+
+
+	# "base-scale" specifie l'échelle à laquelle nous avons
+	# dessiné nos croquis. Par defaut, c'est 1/200.
+	# Si on a utilise une autre échelle, 
+	# il faut enlever le "#" et spécifier l échelle vraiment
+	# employée, c'est le cas apres avoir dessiné la topo
+	# sur un cheminement exporté avec le layout "xviexport"
+	# (voir en bas)
+	base-scale 1 1000
+
+
+	# "scale" : specification de l'échelle,
+	# pour imprimer la topo. La combination entre scale et base-scale
+	# controlle le gros des lignes, rotation, etc, convenable
+	# pour faire l'amplification-reduction entre dessin(s) et
+	# le resultat de l imprimante
+	# C'est tres important de s'assurer que la configuration de
+	# l'imprimante ne spécifie pas l'option "Fit in page"
+	# ou similaire, sinon, l'échelle sera changée pendant
+	# l'impression
+	#scale 1 1000
+	scale 1 500
+
+
+	# Echelle graphique de 50.0 m d'ampleur
+	scale-bar 50.0 m
+
+
+	# Pour faire une rotation
+	#rotate 2.25
+
+
+	# Une couleur de fond, 85% blanc = 15% noir
+	#color map-bg 85
+
+
+	# Une couleur de topo (RVB entre 0 et 100)
+	color map-fg [100 100 80]
+
+
+	# la topo est transparente (on peut voir les galeries sousjacentes)
+	# Par défaut, donc, pas vraiment besoin de specifier
+	transparency on
+
+
+	# Pourcentage de transparence, marche seulement si transparency est "on"
+	opacity 75
+
+
+	# Un commentaire à ajouter au titule,
+	map-comment "<it>Coupe développée <ss>- Samoëns, 74, France"
+
+
+	# Afficher les statistiques d'explo par équipe/nom. C'est lourd
+	# si la cavite est importante et qu'il y a beaucoup d'explorateurs
+	statistics explo-length off
+
+
+	# Afficher le développement et profondeur de la cavité
+	statistics topo-length off
+
+
+	# Afficher un copyright
+	statistics copyright all
+
+
+	# Nous voulons une légende pour expliquer les symboles.
+
+	#	"on" imprimera seulement la légende des symboles dessinés sur la topo
+
+	#	Si l'on veut pour tous les symboles, utilisés ou pas, il faut indiquer "all".
+	# "legend off" = pas de légende
+	legend off
+
+
+	# Par defaut, la légende est de 14 cm de largeur
+	#legend-width 14 cm
+
+
+	# Spécification de la position de la manchette : interieur
+	# occuppée par le titule, auteurs, etc. Nous pouvons indiquer
+	# les cordonnées du point de la topo ou l'on veut la manchette :
+	# 0 0, c'est en bas, à gauche
+	# 100 100, c'est en haut, à droite
+	# La manchette a des "points cardinaux" : n, s, ne, sw, etc.
+	# Il faut spécifier un de ces points 
+	map-header 0 30 nw
+
+
+	# Arrière plan de la manchette
+	map-header-bg off
+
+	layers on
+
+
+	# Options pour afficher le squelette topo,
+	# les points et le nom des stations topos
+	symbol-hide line survey
+	#debug station-names
+	debug off
+
+
+	# Spécifier le pas de la grille, ici 100x100x100 metres
+	# (Trois dimensions, oui, ça sert pour la coupe aussi) 
+	#grid-size 100 100 100 m
+
+	# Spécifier qu'il faut imprimer une grille
+	# au dessous de la topo 
+	#grid bottom
+
+	grid off
+
+endlayout
+
+
+# 3-EXPORTS   
+# Export des xvi pour le dessin 
+export map -fmt xvi -layout xviexport -o B3-map.xvi
+export map -projection extended -fmt xvi -layout xviexport -o B3-coupe.xvi
+
+# Séléction des maps à exporter  
+select MP-B3#@B3 
+select MC-B3#@B3 
+# Export des pdfs  
+export map -projection extended -layout my_layout-coupe -o B3-coupe.pdf
+export map -o Outputs/B3-plan.pdf -layout my_layout
+# Export du modèle 3D  
+export model -o Outputs/B3.lox
+
+# Export des fichier ESRI  
+export map -proj plan -fmt esri -o Outputs/B3 -layout my_layout
+# Export du fichier kml  
+export map -proj plan -fmt kml -o Outputs/B3.kml -layout my_layout
+
+# Export des listes  
+export continuation-list -o Outputs/ContinuationsB3.html 
+export survey-list -location on -o Outputs/SurveysB3.html 
+export cave-list -location on -o Outputs/Caves2020B3.html 

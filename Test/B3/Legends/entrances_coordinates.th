@@ -1,0 +1,52 @@
+encoding utf-8 
+
+# Copyright (C) 2022 Xavier Robert <xavier.robert***@***ird.fr>
+# Ce travail est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :
+#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>
+
+layout Entrances_coords_B3
+
+	# Layout qui définit les différentes variables contenant du texte avec 
+	# les coordonnées de l'entrée que nous voulons ajouter au header.
+	# Nous avons besoin d'une variable par entrée.
+	# Ce layout est appelé par le layout Coords_Header ci-dessous
+
+	code tex-map
+		\def\thjunk{ }
+		\def\thlocationB3{B3    --  Lat. : 27.140973405217153 N ; Long. : -3.4045606350126083 E ; Alt. : 0 m}
+	endcode
+
+	endlayout
+
+layout Coords_Header_B3
+
+	# Layout that set the presentation for the entrance coordinates.
+
+	copy Entrances_coords_B3
+
+	# Appelle le layout ci-dessus Entrances_coords où nous avons défini les différentes 
+	# variables qui contiennent le texte avec 
+	# les coordonnées des entrées à écrire dans le header.
+
+	code tex-map
+		\def\nostring{}
+		\def\thsizexl{}
+		\def\thsizel{}
+		\def\thsizem{}
+		\ifx\thsizexl\nostring\def\thsizexl{30}\else\fi
+		\ifx\thsizel\nostring\def\thsizel{24}\else\fi
+		\ifx\thsizem\nostring\def\thsizem{12}\else\fi
+
+		\ECoordinates={
+			\edef\tmp{\thjunk} \ifx\tmp\empty \else
+				{\size[\thsizem] \ss\thjunk\vss}
+			\fi
+			\edef\tmp{\thlocationB3} \ifx\tmp\empty \else
+				# The first one should be without hskip
+				{\size[\thsizem]\hskip2cm \ss\thlocationB3\vss}
+			\fi
+			}
+	endcode
+
+	endlayout
+

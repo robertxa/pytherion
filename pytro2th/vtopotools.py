@@ -33,6 +33,7 @@ from __future__ import  division
 import sys, os
 import numpy as np
 
+############################################################################
 def read_vtopo_header(lines):
 	"""
 		Function to read header from vtopofile
@@ -84,7 +85,8 @@ def read_vtopo_header(lines):
 	
 	return cavename, coordinates, coordsyst, club, entrance, versionfle
 
-	
+
+############################################################################	
 def read_settings(line):
 	"""
 		Function to read the line that define the settings of the survey session : 
@@ -123,6 +125,7 @@ def read_settings(line):
 	return settings, comments#.encode('utf-8', errors = "replace")
 
 
+############################################################################
 def read_data(lines, settings, j, iline):
 	"""
 		Function to read the data from the line
@@ -166,6 +169,7 @@ def read_data(lines, settings, j, iline):
 	return data
 
 
+############################################################################
 def convert_text(lines):
 	"""
 		Fonction to convert characters encoding...
@@ -198,8 +202,9 @@ def convert_text(lines):
 	             '\xee' : u'î',
 	             '\xef' : u'ï'}
 	
-	#for line in lines:
-	for line in lines.decode('cp1252'):
+	for line in lines:
+	#for line in lines.decode('cp1252'):
+		#line = line.decode('cp1252')
 		# windows = latin-1 ? cp-1252 ? cp1252 ? mbcs ?
 		for elem in dictcaract:
 			#print line
@@ -209,6 +214,7 @@ def convert_text(lines):
 	return lines
 
 
+############################################################################
 if __name__ == u"__main__":
 	"""
 	Function to test sub-functions

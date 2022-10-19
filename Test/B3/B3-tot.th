@@ -1,0 +1,35 @@
+encoding utf-8 
+
+# Copyright (C) 2022 Xavier Robert <xavier.robert***@***ird.fr>
+# Ce travaille est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :
+#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>
+
+survey B3 -title "B3"
+
+	# Pour importer les différentes données de différents fichiers topos :
+	input Data/B3.th
+
+#	centerline
+		##Rajout des longueurs explorées, non topo, ou topos perdues
+#		station Ca.31@B3 "+78 m explorés " continuation explored 78m
+		## Pour assembler plusieurs fichiers topos
+#		equate  6@B3  0@B32
+
+#	endcenterline)
+
+#	##########################################################################################
+#	## Pour importer les différents fichiers de dessins en plan
+#	## Et Pour assembler plusieurs scraps entre eux, il faut utiliser la commande
+#	## join scrap1 scrap2 -count n (où n = nombre de galerie à connecter, par défaut n = 1). C'est tout simple !
+#	join scrap1 scrap2 #-count n
+
+## Pour le plan
+input Data/B3.th2
+
+## Pour la coupe développée
+input Data/B3-coupe.th2
+
+## Appel des maps
+input B3-maps.th
+
+endsurvey
