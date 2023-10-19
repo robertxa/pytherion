@@ -96,6 +96,12 @@ Depending of the input parameters, several files can be produced:
 	2. cavename.thconfig : file to build the pdf's maps and others
 	3. config.thc        : config file for the .thconfig file.
 
+How to cite
+-----------
+
+.. image:: https://zenodo.org/badge/159739189.svg
+  :target: https://zenodo.org/doi/10.5281/zenodo.10020982
+
 
 Licence
 -------
