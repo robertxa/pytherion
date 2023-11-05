@@ -5,12 +5,6 @@ This module is designed for cavers who need to convert cave's surveys from the V
 to the Therion software. It provides functions to read Visual Topo files (*.tro) and to write Therion files
 (*.th, *.thconfig and config.thc)
 
-WARNINGS
---------
-
-This code crashes because of a problem of encoding reading when used with Visual Topo files which contain accentuated characters !!!
-For the moment, I did not manage to solve that problem...
-
 Install
 -------
 
@@ -31,7 +25,7 @@ To create only a generic thconfig file with a config file:
 To convert a cave.tro file:
 	>>> tro2th(fle_tro_fnme = 'cave.tro')
 
-To build only a thonfig file, in english, without any comments and without extended elevation layout
+To build only a thconfig file, in english, without any comments and without extended elevation layout
 	>>> tro2th(thlang = 'en', cavename = 'Test', icomments = False, icoupe = False, ithconfig = False, thconfigfnme = None, ithc = False, thcpath = my/path/to/my/confg/file, thcfnme = 'config.thc', sourcefiles = ['Test.th', 'Test.th2'], xviscale = 1000, xvigrid = 10, scale = 500,Errorfiles = True)
 
 Options/inputs
@@ -77,9 +71,10 @@ Options/inputs are (option_names):
 			          Set 10 by default
 	15. scale       : (Real) scale of the map
 			          Set to 500 by default that corresponds to 1/500 	
-	16. Errorfiles  : (Boolean) If True (by default), an error will be raised if output files exists in the folder
+	16. Errorfiles  : (Boolean) If True (by default), an error will be raised if output files exist in the folder
 			          If False, only a warning is raised, and the previous files are erased by the new ones.
 			          Use with caution
+	17. fle_tro_fnme_encoding: (string) character set encoding (e.g., cp1252 or iso-8859-1) of the .tro file to convert. Default is utf-8.
 
 Help files
 ----------

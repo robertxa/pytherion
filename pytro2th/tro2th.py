@@ -34,6 +34,7 @@
 from __future__ import division
 #from __future__ import unicode_literals
 import sys, os, wget
+from urllib.error import HTTPError
 
 # Import Python modules
 #modulesNames = ['sys', 'warnings']
@@ -54,6 +55,7 @@ from .buildthconfig import *
 
 
 def tro2th(fle_tro_fnme = None, fle_th_fnme = None, 
+			fle_tro_encoding=None,
 			thlang = u'fr',
 			cavename = None, 
 			icomments = True, icoupe = True, 
@@ -171,7 +173,7 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 		if fle_th_fnme is None:
 			# convert tro file to th file
 			print('1')
-			cavename, coordinates, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, 
+			cavename, coordinates, coordsyst, fle_th_fnme = convert_tro(fle_tro_fnme, fle_tro_encoding=fle_tro_encoding,
 			                                              icomments = icomments, icoupe = icoupe, istructure = istructure, 
 			                                              thlang = thlang, Errorfiles = Errorfiles)
 		else:
@@ -347,7 +349,7 @@ def mkfle_output_txt(cavename):
 
 
 
-def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None, 
+def convert_tro(fle_tro_fnme, fle_tro_encoding=None, fle_th_fnme = None, cavename = None, 
                 icomments = True, icoupe = True, istructure = True, thlang = u'fr', Errorfiles = True):	
 	"""
 		Function that manages the tro 2 th conversion
@@ -393,7 +395,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	if thlang == u'fr': print(u'\tTravail sur %s' % fle_tro_fnme)
 	elif thlang == u'en':print(u'\tProcessing %s' % fle_tro_fnme)
 	print(' ')
-	fle_tro = open(fle_tro_fnme, 'rU')
+	fle_tro = open(fle_tro_fnme, 'r', encoding=fle_tro_encoding)
 	# read the .tro file
 	lines = fle_tro.readlines()
 	# change the encoding

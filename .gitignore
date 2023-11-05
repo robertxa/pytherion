@@ -6,3 +6,15 @@
 
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
+
+# Distribution / packaging
+build/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/

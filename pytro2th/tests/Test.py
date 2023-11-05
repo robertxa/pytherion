@@ -31,7 +31,6 @@ from __future__ import  division
 import sys
 import os
 import copy
-import numpy as np
 
 
 
