@@ -4,19 +4,24 @@
 # Copyright (c) 2020 Xavier Robert <xavier.robert@ird.fr>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import importlib.util
+from setuptools import setup
 
-from setuptools import setup, find_packages
 
-# import the library
-#from pytro2th import tro2th
-import pytro2th
+spec = importlib.util.spec_from_file_location(
+    "pytro2th._version",
+    "pytro2th/_version.py",
+)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+VERSION = module.__version__
 
 def readme():
 	with open('README.rst') as f:
 		return f.read()
 
 setup(name='pytherion',
-	version=pytro2th.__version__,
+	version=VERSION,
 	description='Module that provides tools for manage data transformations for the software Therion',
 	long_descritpion=open('README.rst').read(),
 	#url='http://github.com/robertxa/pytro2th',
@@ -24,17 +29,17 @@ setup(name='pytherion',
 	author='Xavier Robert',
 	author_email='xavier.Robert@univ-grenoble-alpes.fr',
 	license='GPL-V3.0',
-	packages=find_packages(),
-	#packages=['pytro2th'],
+    entry_points={
+        "console_scripts": [
+            "pytro2th=pytro2th.command_line:main",
+        ],
+    },
+	packages=['pytro2th'],
 	#scripts=['bin/tro2therion'],
-	#install_requires=[
-	#      'os',
-	#      'numpy',
-	#      'sys',
-	#      'wget',
-	#      'datetime',
-	#      'pyproj'
-	#],
+	install_requires=[
+        'wget',
+        'pyproj'
+	],
 	#classifiers=[
 	#	"Programming language :: Python",
 	#	"Operating System :: OS Independent",

@@ -34,7 +34,6 @@ from __future__ import  division
 
 # Import modules
 import sys, os, datetime
-import numpy as np
 
 ########################
 

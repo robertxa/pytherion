@@ -13,10 +13,8 @@ from __future__ import print_function
 # Import modules
 import sys
 import os
-#import copy
-import numpy as np
 
-__version__ = "1.2.0"
+from . _version import __version__
 
 # Import all the functions
 __all__ = ['vtopotools', 'datathwritetools', 'buildthconfig', 'buildthconfig', 'tro2th.tro2th']

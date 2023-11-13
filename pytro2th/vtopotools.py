@@ -31,7 +31,6 @@ from __future__ import  division
 
 # Import modules
 import sys, os
-import numpy as np
 
 ############################################################################
 def read_vtopo_header(lines):
@@ -64,6 +63,11 @@ def read_vtopo_header(lines):
 	             u'LT3' : u'EPSG:27573',
 	             u'LT4' : u'EPSG:27574'
 	             }
+	cavename = ''
+	club = ''
+	coordtro = ''
+	coordinates = ["0.0", "0.0", "0.0"]
+
 	for line in lines:
 		if u"Version" in line:
 			versionfle = line[1].replace(u'\n', u'').rstrip(u'\n\r').split(' ')

@@ -35,7 +35,6 @@ from __future__ import  division
 
 # Import modules
 import sys, os, copy, datetime
-import numpy as np
 from pyproj import Proj, transform
 
 
