@@ -397,9 +397,26 @@ def convert_tro(fle_tro_fnme, fle_tro_encoding=None, fle_th_fnme = None, cavenam
 	print(' ')
 	fle_tro = open(fle_tro_fnme, 'r', encoding=fle_tro_encoding)
 	# read the .tro file
-	lines = fle_tro.readlines()
-	# change the encoding
-	lines = convert_text(lines)
+	try:
+		lines = fle_tro.readlines()
+		# change the encoding
+		lines = convert_text(lines)
+	except UnicodeDecodeError:
+		# find the line where there is the error
+		# initiate the line number
+		lineNumber = 1
+		try:
+			# read the first line
+			line = fle_tro.redline()
+			while line:
+				# update the line number
+				lineNumber += 1
+				# read the next line
+				line = fle_tro.readline()
+		except UnicodeDecodeError:
+			print('\033[91mERROR\033[0m: special or accentuated character not supporter line %s \n\t Correct the input file' %(str(lineNumber)))
+		
+				
 	
 	# read the header
 	coordinates = None
